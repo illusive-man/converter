@@ -1,84 +1,20 @@
 <?php
 
-$num = 10000011;
-$result = ConvertToText($num);
-echo $result . "<br />";
-echo $num;
-
-
 function convertToText(float $numberToConvert): string
 {
-    $arrUnits = [
-        "ноль ",
-        "один ",
-        "два ",
-        "три ",
-        "четыре ",
-        "пять ",
-        "шесть ",
-        "семь ",
-        "восемь ",
-        "девять ",
-        "десять ",
-        "одиннадцать ",
-        "двенадцать ",
-        "тринадцать ",
-        "четырнадцать ",
-        "пятнадцать ",
-        "шестнадцать ",
-        "семнадцать ",
-        "восемнадцать ",
-        "девятнадцать ",
-        "двадцать "
-    ];
-    $arrTens = [
-        "empty",
-        "десять ",
-        "двадцать ",
-        "тридцать ",
-        "сорок ",
-        "пятьдесят ",
-        "шестьдесят ",
-        "семьдесят ",
-        "восемьдесят ",
-        "девяносто "
-    ];
-    $arrHundreds = [
-        "empty",
-        "сто ",
-        "двести ",
-        "триста ",
-        "четыреста ",
-        "пятьсот ",
-        "шестьсот ",
-        "семьсот ",
-        "восемьсот ",
-        "девятьсот "
-    ];
-
-    $arrMagnitude = array(
-        array(0, "копейка ", "копейки ", "копеек "), //future functionality
-        array(0, "рубль ", "рубля ", "рублей "),
-        array(0, "тысяча ", "тысячи ", "тысяч "),
-        array(0, "миллион ", "миллиона ", "миллионов "),
-        array(0, "миллиард ", "миллиарда ", "миллиардов "),
-        array(0, "триллион ", "триллиона ", "триллионов ")
-    );
-
     $errMessage = null;
+
     if ($numberToConvert < 0 || $numberToConvert > 99999999999999) {
         return $errMessage = "Error: Input number should be between 1 and 99'999'999'999'999";
     }
 
-    $arrChunks = array(); // TODO: Convert all chunks to string type from int.
-    $arrChunks[] = 0;
-    $reversedValue = strrev(strval($numberToConvert));
-    $reversedSize = strlen($reversedValue);
+    $allArrays = getArrays();
+    $arrUnits = $allArrays[0];
+    $arrTens = $allArrays[1];
+    $arrHundreds = $allArrays[2];
+    $arrMagnitude = $allArrays[3];
 
-    for ($i = 0; $i < $reversedSize; $i += 3) {
-        $arrChunks[] = strrev(substr($reversedValue, $i, 3));
-    }
-
+    $arrChunks = getChunks($numberToConvert);
     $numGroups = count($arrChunks) - 1;
     $fullResult = null;
 
@@ -118,19 +54,20 @@ function convertToText(float $numberToConvert): string
         }
 
         if ($arrChunks[$i] != '000') {
-            $preResult .= getGroupname($arrMagnitude, $i, $arrChunks[$i]);
+            $preResult .= getMagnitude($arrMagnitude, $i, $arrChunks[$i]);
         } elseif ($arrChunks[$i] == '000' && $i == 1) {
-            $preResult .= getGroupname($arrMagnitude, $i, $arrChunks[$i]);
+            $preResult .= getMagnitude($arrMagnitude, $i, $arrChunks[$i]);
         }
 
         $resArray[$i] = $preResult;
         $fullResult .= $resArray[$i];
     }
 
+    displayResult($fullResult);
     return $fullResult;
 }
 
-function getGroupname(array $group, int $gnum, string $number): string
+function getMagnitude(array $group, int $gnum, string $number): string
 {
 
     $subResult = null;
@@ -157,3 +94,62 @@ function getGroupname(array $group, int $gnum, string $number): string
 
     return $subResult;
 }
+
+function getChunks($inputNumber)
+{
+
+    $arrCh = array(); // TODO: Convert all chunks to string type from int.
+    $arrCh[] = 0;
+    $reversedValue = strrev($inputNumber);
+    $reversedSize = strlen($reversedValue);
+
+    for ($i = 0; $i < $reversedSize; $i += 3) {
+        $arrCh[] = strrev(substr($reversedValue, $i, 3));
+    }
+
+    return $arrCh;
+}
+
+function getArrays()
+{
+
+    //@formatter:off
+    $arrUnits =
+    ["ноль ","один ","два ","три ","четыре ","пять ","шесть ","семь ", "восемь ", "девять ",
+     "десять ","одиннадцать ","двенадцать ","тринадцать ","четырнадцать ","пятнадцать ","шестнадцать ",
+     "семнадцать ","восемнадцать ","девятнадцать ","двадцать "
+    ];
+
+    $arrTens =
+    ["empty","десять ","двадцать ","тридцать ","сорок ","пятьдесят ","шестьдесят ","семьдесят ",
+     "восемьдесят ","девяносто "
+    ];
+
+    $arrHundreds =
+    ["empty","сто ","двести ","триста ","четыреста ","пятьсот ","шестьсот ","семьсот ",
+     "восемьсот ","девятьсот "
+    ];
+
+    $arrMagnitude =
+        array(
+                array(0, "копейка ", "копейки ", "копеек "), //future functionality
+                array(0, "рубль ", "рубля ", "рублей "),
+                array(0, "тысяча ", "тысячи ", "тысяч "),
+                array(0, "миллион ", "миллиона ", "миллионов "),
+                array(0, "миллиард ", "миллиарда ", "миллиардов "),
+                array(0, "триллион ", "триллиона ", "триллионов ")
+        );
+    //@formatter:on
+
+    return array($arrUnits, $arrTens, $arrHundreds, $arrMagnitude);
+
+}
+
+function displayResult(string $resText){
+
+    print ($resText . "<br>");
+
+}
+
+$num = 100000000;
+$result = ConvertToText($num);
