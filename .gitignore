@@ -2,3 +2,4 @@ composer.loc
 composer.json
 vendor
 .idea
+phing-latest.phar

@@ -2,11 +2,21 @@
 
 function convertToText(float $numberToConvert): string
 {
-    $resMessage = checkNumber($numberToConvert);
-    if (is_string($resMessage)) {
-        return $resMessage;
+    if ($numberToConvert < 0 || $numberToConvert > 99999999999999) {
+        return $message = "Error: Input number should be between 1 and 99'999'999'999'999";
     }
 
+    if ($numberToConvert == 0) {
+        return $message = "ноль рублей";
+    }
+
+    $result = num2txt($numberToConvert);
+
+    return $result;
+}
+
+function num2txt(float $numberToConvert): string
+{
     $allArrays = getArrays();
     $arrUnits = $allArrays[0];
     $arrTens = $allArrays[1];
@@ -17,40 +27,26 @@ function convertToText(float $numberToConvert): string
     $numGroups = count($arrChunks) - 1;
     $fullResult = null;
 
-    for ($i = $numGroups; $i >= 1; $i--) { // Main big cycle
-
+    for ($i = $numGroups; $i >= 1; $i--) {
         $preResult = null;
         $currChunk = $arrChunks[$i];
         $numLen = strlen($currChunk);
 
-        if ($i == 2) {
-            $arrUnits[1] = "одна ";
-            $arrUnits[2] = "две ";
-        } else {
-            $arrUnits[1] = "один ";
-            $arrUnits[2] = "два ";
-        }
+        $arrUnits = fixArray($i, $arrUnits);
 
-        $centis = null;
-
-        if ($numLen == 3) {
-            $centis = intval(substr($currChunk, 0, 1));
-        }
-
-        if ($centis != 0) {
+        $centis = intval(substr($currChunk, 0, 1));
+        if ($numLen == 3 && $centis != 0) {
             $preResult .= $arrHundreds[$centis];
         }
 
         $decimals = intval(substr($currChunk, -2));
-
-        if ($decimals > 0 && $decimals < 20) {
+        if ($decimals > 0 && $decimals <= 19) {
             $preResult .= $arrUnits[$decimals];
-        } elseif ($decimals != 0) {
+        } else {
             $preResult .= $arrTens[substr($currChunk, -2, 1)];
-            if (substr($decimals, -1) != 0) {
-                $preResult .= $arrUnits[substr($currChunk, -1)];
-            }
+            $preResult .= $arrUnits[substr($currChunk, -1)];
         }
+
         if ($currChunk != 0 || $i == 1) {
             $preResult .= getMagnitude($arrMagnitude, $i, $currChunk);
         }
@@ -59,19 +55,6 @@ function convertToText(float $numberToConvert): string
     }
 
     return $fullResult;
-}
-
-function checkNumber(float $number)
-{
-
-    if ($number < 0 || $number > 99999999999999) {
-        return $message = "Error: Input number should be between 1 and 99'999'999'999'999";
-    }
-    if ($number == 0) {
-        return $message = "ноль рублей";
-    }
-
-    return true;
 }
 
 function getMagnitude(array $group, int $gnum, string $number): string
@@ -102,7 +85,7 @@ function getMagnitude(array $group, int $gnum, string $number): string
     return $subResult;
 }
 
-function getChunks($inputNumber)
+function getChunks($inputNumber): array
 {
 
     $arrCh = array();
@@ -117,41 +100,40 @@ function getChunks($inputNumber)
     return $arrCh;
 }
 
-function getArrays()
+function fixArray(int $fem, array $arr): array
 {
+    if ($fem == 2) {
+        $arr[1] = "одна ";
+        $arr[2] = "две ";
+    } else {
+        $arr[1] = "один ";
+        $arr[2] = "два ";
+    }
 
+    return $arr;
+}
+
+function getArrays(): array
+{
     //@formatter:off
-    $arrUnits = array("ноль ","один ","два ","три ","четыре ","пять ","шесть ","семь ", "восемь ", "девять ",
-     "десять ","одиннадцать ","двенадцать ","тринадцать ","четырнадцать ","пятнадцать ","шестнадцать ",
-     "семнадцать ","восемнадцать ","девятнадцать ");
-
-    $arrTens =
-    ["empty","десять ","двадцать ","тридцать ","сорок ","пятьдесят ","шестьдесят ","семьдесят ",
-     "восемьдесят ","девяносто "
-    ];
-
-    $arrHundreds =
-    ["empty","сто ","двести ","триста ","четыреста ","пятьсот ","шестьсот ","семьсот ",
-     "восемьсот ","девятьсот "
-    ];
-
-    $arrMagnitude =
-        array(
-                array(0,"копейка ", "копейки ", "копеек "), //future functionality
-                array(0,"рубль ", "рубля ", "рублей "),
-                array(0,"тысяча ", "тысячи ", "тысяч "),
-                array(0,"миллион ", "миллиона ", "миллионов "),
-                array(0,"миллиард ", "миллиарда ", "миллиардов "),
-                array(0,"триллион ", "триллиона ", "триллионов "),
-                array(0,"квадриллион ", "квадриллиона ", "квадриллионов "),
-                array(0,"квинтиллион ", "квинтиллиона ", "квинтиллионов ")
-        );
+    $arrMagnitude = array(
+                            array(0,"копейка ", "копейки ", "копеек "), //future functionality
+                            array(0,"рубль ", "рубля ", "рублей "),
+                            array(0,"тысяча ", "тысячи ", "тысяч "),
+                            array(0,"миллион ", "миллиона ", "миллионов "),
+                            array(0,"миллиард ", "миллиарда ", "миллиардов "),
+                            array(0,"триллион ", "триллиона ", "триллионов "),
+                            array(0,"квадриллион ", "квадриллиона ", "квадриллионов "),
+                            array(0,"квинтиллион ", "квинтиллиона ", "квинтиллионов ")
+                    );
+    $arrUnits = array("","один ","два ","три ","четыре ","пять ","шесть ","семь ", "восемь ", "девять ",
+                    "десять ","одиннадцать ","двенадцать ","тринадцать ","четырнадцать ","пятнадцать ",
+                    "шестнадцать ","семнадцать ","восемнадцать ","девятнадцать ");
+    $arrTens = array("","десять ","двадцать ","тридцать ","сорок ","пятьдесят ","шестьдесят ","семьдесят ",
+                    "восемьдесят ","девяносто ");
+    $arrHundreds = array("","сто ","двести ","триста ","четыреста ","пятьсот ","шестьсот ","семьсот ",
+                    "восемьсот ","девятьсот ");
     //@formatter:on
 
     return array($arrUnits, $arrTens, $arrHundreds, $arrMagnitude);
 }
-
-$num = 1145211101000; //TODO: find a way to display zero and negative numbers
-echo ConvertToText($num);
-
-
