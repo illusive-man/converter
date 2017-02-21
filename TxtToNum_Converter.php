@@ -3,10 +3,10 @@
 function convertToText(float $numberToConvert): string
 {
     if ($numberToConvert < 0 || $numberToConvert > 99999999999999) {
-        return $message = "Error: Input number should be between 1 and 99'999'999'999'999";
+        return $message = "Error: Input number should be between 0 and 99'999'999'999'999";
     }
 
-    if ($numberToConvert == 0) {
+    if ($numberToConvert == 0) {  //avoiding all calculations to display such a simple result
         return $message = "ноль рублей";
     }
 
@@ -102,6 +102,7 @@ function getChunks($inputNumber): array
 
 function fixArray(int $fem, array $arr): array
 {
+
     if ($fem == 2) {
         $arr[1] = "одна ";
         $arr[2] = "две ";
