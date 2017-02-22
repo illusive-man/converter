@@ -9,7 +9,7 @@ https://www.tools4noobs.com/online_tools/number_spell_words/
 
 -- both are working wrong for Russian. Actually almost all so called "universal converters" are working wrong for langages like Russian.
 
-This converter requires PHP 7.0+ to work properly, but I think that someday I will remove code hinting (introduced in PHP7) I used for purely for development purposes, so the converter could work with earlier PHP versions. If someone would ask for it of course.
+This converter requires PHP 7.0+ to work properly, but I think that someday I will remove type hinting (introduced in PHP7) I used for purely for development purposes, so the converter could work with earlier PHP versions. If someone would ask for it of course.
 
 Currently only Russian language is supported since this converter was initially created in VBA for accounting software in Russia.
 
