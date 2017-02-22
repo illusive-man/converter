@@ -2,5 +2,5 @@
 
 require_once 'TxtToNum_Converter.php';
 
-$num = 43000660043042; //TODO: Add display of negative numbers
+$num = 43000660043042;
 echo ConvertToText($num);
