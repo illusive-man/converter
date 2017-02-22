@@ -1,11 +1,16 @@
-Converter of numeric values to their written representation.
+Converter for numeric values to their written text representation.
 
-The reason behind this converter was the fact that most 
-of previously created apps and tools (e.g. Number Words) of the same kind 
-contain pretty big amounts of code (unnecessarily 
-overcomplicated) and sometimes not working properly (Online converter tools like 
-https://www.easycalculation.com/convert-number-to-text.php or https://www.tools4noobs.com/online_tools/number_spell_words/ - both are working wrong for Russian). 
+The reason behind this converter was the fact that most of previously created apps and tools (e.g. Number Words) of the same kind 
+contain pretty big amounts of code (unnecessarily overcomplicated) and sometimes not working properly (Online converter tools like 
 
-This converter requires PHP 7.0+ to work properly, but I think that someday I will remove code hinting (introduced in PHP7) I used for purely dev purpose, so the converter could work with earlier PHP versions.
+https://www.easycalculation.com/convert-number-to-text.php
+or 
+https://www.tools4noobs.com/online_tools/number_spell_words/ 
 
-Currently only Russian language is supported since it was intended for converting numeric values to text/written representation for accounting software in Russia.
+-- both are working wrong for Russian.
+
+This converter requires PHP 7.0+ to work properly, but I think that someday I will remove code hinting (introduced in PHP7) I used for purely for development purposes, so the converter could work with earlier PHP versions. If someone would ask for it of course.
+
+Currently only Russian language is supported since this converter was iitially created in VBA for accounting software in Russia.
+
+TODO: Implement this converter as a Class. (Any help would be appreciated!)
