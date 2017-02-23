@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
 require_once 'TxtToNum_Converter.php';
 
-$num = 43000660043042;
+$num = 10000000001;
 echo ConvertToText($num);

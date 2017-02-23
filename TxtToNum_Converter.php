@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 function convertToText(float $numberToConvert): string
 {
     if ($numberToConvert < 0 || $numberToConvert > 99999999999999) {
@@ -85,12 +87,12 @@ function getMagnitude(array $group, int $gnum, string $number): string
     return $subResult;
 }
 
-function getChunks($inputNumber): array
+function getChunks(float $inputNumber): array
 {
 
     $arrCh = array();
     $arrCh[] = 0;
-    $reversedValue = strrev($inputNumber);
+    $reversedValue = strrev(strval($inputNumber));
     $reversedSize = strlen($reversedValue);
 
     for ($i = 0; $i < $reversedSize; $i += 3) {
@@ -117,23 +119,23 @@ function fixArray(int $fem, array $arr): array
 function getArrays(): array
 {
     //@formatter:off
-    $arrMagnitude = array(
-                            array(0,"копейка ", "копейки ", "копеек "), //future functionality
-                            array(0,"рубль ", "рубля ", "рублей "),
-                            array(0,"тысяча ", "тысячи ", "тысяч "),
-                            array(0,"миллион ", "миллиона ", "миллионов "),
-                            array(0,"миллиард ", "миллиарда ", "миллиардов "),
-                            array(0,"триллион ", "триллиона ", "триллионов "),
-                            array(0,"квадриллион ", "квадриллиона ", "квадриллионов "),
-                            array(0,"квинтиллион ", "квинтиллиона ", "квинтиллионов ")
-                    );
-    $arrUnits = array("","один ","два ","три ","четыре ","пять ","шесть ","семь ", "восемь ", "девять ",
+    $arrMagnitude = [
+                     array(0,"копейка ", "копейки ", "копеек "), //future functionality
+                     array(0,"рубль ", "рубля ", "рублей "),
+                     array(0,"тысяча ", "тысячи ", "тысяч "),
+                     array(0,"миллион ", "миллиона ", "миллионов "),
+                     array(0,"миллиард ", "миллиарда ", "миллиардов "),
+                     array(0,"триллион ", "триллиона ", "триллионов "),
+                     array(0,"квадриллион ", "квадриллиона ", "квадриллионов "),
+                     array(0,"квинтиллион ", "квинтиллиона ", "квинтиллионов ")
+                    ];
+    $arrUnits =     ["","один ","два ","три ","четыре ","пять ","шесть ","семь ", "восемь ", "девять ",
                     "десять ","одиннадцать ","двенадцать ","тринадцать ","четырнадцать ","пятнадцать ",
-                    "шестнадцать ","семнадцать ","восемнадцать ","девятнадцать ");
-    $arrTens = array("","десять ","двадцать ","тридцать ","сорок ","пятьдесят ","шестьдесят ","семьдесят ",
-                    "восемьдесят ","девяносто ");
-    $arrHundreds = array("","сто ","двести ","триста ","четыреста ","пятьсот ","шестьсот ","семьсот ",
-                    "восемьсот ","девятьсот ");
+                    "шестнадцать ","семнадцать ","восемнадцать ","девятнадцать "];
+    $arrTens =      ["","десять ","двадцать ","тридцать ","сорок ","пятьдесят ","шестьдесят ","семьдесят ",
+                    "восемьдесят ","девяносто "];
+    $arrHundreds =  ["","сто ","двести ","триста ","четыреста ","пятьсот ","шестьсот ","семьсот ",
+                    "восемьсот ","девятьсот "];
     //@formatter:on
 
     return array($arrUnits, $arrTens, $arrHundreds, $arrMagnitude);
