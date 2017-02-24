@@ -5,3 +5,4 @@ vendor
 phing-latest.phar
 num2txt.php
 data.php
+_config.yml
