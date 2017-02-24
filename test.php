@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require_once 'TxtToNum_Converter.php';
 
-$num = 90101101000621;
+$num = 90101099000621;
 $strnum = ConvertToText($num);
 
 echo mbUcfirst($strnum, "UTF-8", true);

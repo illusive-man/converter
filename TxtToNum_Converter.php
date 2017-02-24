@@ -27,15 +27,14 @@ function num2txt(float $numberConvert): string
     $fullResult = null;
 
     for ($i = $numGroups; $i >= 1; $i--) {
-        $preResult = null;
         $currChunk = $arrChunks[$i - 1];
-        $numLen = strlen($currChunk);
         $arrUnits = fixArray($i, $arrUnits);
 
+        $preResult = null;
         $centis = intval($currChunk / 100);
         $decimals = $currChunk - $centis * 100;
 
-        if ($numLen == 3 && $centis != 0) {
+        if ($centis >= 1) {
             $preResult .= $arrHundreds[$centis - 1];
         }
         if ($decimals > 0 && $decimals < 20) {
