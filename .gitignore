@@ -4,3 +4,4 @@ vendor
 .idea
 phing-latest.phar
 num2txt.php
+data.php
