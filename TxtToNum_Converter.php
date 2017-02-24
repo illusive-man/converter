@@ -34,7 +34,7 @@ function num2txt(float $numberConvert): string
         $centis = intval($currChunk / 100);
         $decimals = $currChunk - $centis * 100;
 
-        if ($centis >= 1) {
+        if ($centis > 0) {
             $preResult .= $arrHundreds[$centis - 1];
         }
         if ($decimals > 0 && $decimals < 20) {
@@ -104,11 +104,11 @@ function getChunks(float $inputNumber): array
 function fixArray(int $fem, array $arr): array
 {
     if ($fem == 2) {
-        $arr[1] = 'одна ';
-        $arr[2] = 'две ';
+        $arr[0] = 'одна ';
+        $arr[1] = 'две ';
     } else {
-        $arr[1] = 'один ';
-        $arr[2] = 'два ';
+        $arr[0] = 'один ';
+        $arr[1] = 'два ';
     }
 
     return $arr;
