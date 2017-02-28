@@ -3,31 +3,57 @@ declare(strict_types = 1);
 
 namespace Converter;
 
+/**
+ * Class Number2Text (Russian only at the moment)
+ * Converts numbers to their text representation e.g. 12 -> twelve
+ *
+ * @author Sergey Kanashin <goujon@mail.ru>
+ * @copyright 2003-2017
+ *
+ * @package Converter
+ * @require PHP 7.x+
+ */
 class Number2Text
 {
-    public $curr;
-
-    public function typeNumber(float $inputNumber)
+    /**
+     * Checks the input number, calls main converter function and returns result
+     *
+     * @param float $iNumber - number to convert
+     *
+     * @return string - text result
+     */
+    public function typeNumber(float $iNumber)
     {
-        if ($inputNumber < 0 || $inputNumber > 99999999999999) {
+        if ($iNumber < 0 || $iNumber > 99999999999999) {
             return $message = 'Error: Input number should be between 0 and 99\'999\'999\'999\'999';
         }
 
-        if ($inputNumber == 0) {  //avoiding all calculations to display such a simple result
+        if ($iNumber == 0) {  //avoiding all calculations to display such a simple result
             return $message = 'ноль рублей';
         }
 
-        $result = $this->num2txt($inputNumber);
+        $result = $this->num2txt($iNumber);
 
         return $result;
     }
 
-    private function num2txt(float $numberConvert): string
+    /**
+     * Deconstruct, transform and convert number to its text representation
+     *
+     * @param float $iNumber
+     *
+     * @return string
+     */
+    private function num2txt(float $iNumber): string
     {
+        $message = null;
         $allArrays = $this->getArrays();
+        if ($allArrays[0] == 'ERROR:') {
+            return $message = $allArrays[0] . $allArrays[1];
+        }
         list($arrUnits, $arrTens, $arrHundreds, $arrMagnitude) = $allArrays;
 
-        $arrChunks = $this->getChunks($numberConvert);
+        $arrChunks = $this->getChunks($iNumber);
         $numGroups = count($arrChunks);
         $fullResult = null;
 
@@ -62,28 +88,56 @@ class Number2Text
         return $fullResult;
     }
 
+    /**
+     * Load array data from JSON file
+     *
+     * @return array
+     */
     private function getArrays(): array
     {
-        $data = file_get_contents('data.json');
-        $allArrays = json_decode($data, true, 4);
+        $jsonFile = __DIR__ . '/data.json';
+        if (file_exists($jsonFile) && is_file($jsonFile)) {
+            $data = file_get_contents($jsonFile);
+            $allArrays = json_decode($data, true);
+        } else {
+            $allArrays = array(
+                'ERROR:',
+                ' Please make sure that file data.json is installed in (' .
+                __DIR__ . ') directory!'
+            );
+        }
 
         return $allArrays;
     }
 
-    private function getChunks(float $inputNumber): array
+    /**
+     * Returns an array with number divided into chunks
+     *
+     * @param float $iNumber
+     *
+     * @return array
+     */
+    private function getChunks(float $iNumber): array
     {
         $arrCh = array();
-        $reversedValue = strrev(strval($inputNumber));
+        $reversedValue = strrev(strval($iNumber));
         $reversedSize = strlen($reversedValue);
 
         for ($i = 0; $i < $reversedSize; $i += 3) {
             $arrCh[] = strrev(substr($reversedValue, $i, 3));
         }
 
-
         return $arrCh;
     }
 
+    /**
+     * If a number group has a feminine/masculine name, fix the words array to address that
+     *
+     * @param int   $fem - group number
+     * @param array $arr - array with words corresponding to numbers
+     *
+     * @return array Fixed array
+     */
     private function fixArray(int $fem, array $arr): array
     {
         if ($fem == 2) {
@@ -97,6 +151,15 @@ class Number2Text
         return $arr;
     }
 
+    /**
+     * Defines the group name according to its place in a number (millions, thousands, roubles etc.)
+     *
+     * @param array  $group
+     * @param int    $gnum
+     * @param string $number
+     *
+     * @return string
+     */
     private function getMagnitude(array $group, int $gnum, string $number): string
     {
         $subResult = null;
@@ -129,6 +192,13 @@ class Number2Text
         return $subResult;
     }
 
+    /**
+     * Defines whether to show the currency name in the end of a string
+     *
+     * @param bool $show
+     *
+     * @return $this
+     */
     public function showCurrency(bool $show = false)
     {
         $this->curr = $show;
@@ -137,8 +207,8 @@ class Number2Text
     }
 }
 
-$number = 123654987000;
-$show = true;
+$number = 11123654987000; // 99.(9) trillion max
+$show = false; //Whether to show currency name
 
 $converter = new Number2Text();
 $text = $converter->showCurrency($show)->typeNumber($number);
