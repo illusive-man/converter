@@ -1,11 +1,11 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 if (!file_exists('data.json')) {
     exit('ERROR: No data file found. Please upload data.json in the same dir with this one.');
 }
 
-require_once 'TxtToNum_Converter.php';
+require_once 'Num2Txt_Converter.php';
 $num = 0;
 
 if (isset($_GET['number'])) {
@@ -40,6 +40,7 @@ function mbUcfirst($str, $encoding = "UTF-8", $lowerStrend = false)
     <title>Testing Converter</title>
 </head>
 <body>
+
 <form action="test.php" method="get">
     <input type="text" name="number" value="<?php echo $num; ?>" title="Enter number: ">
     <input type="submit" value="Submit">

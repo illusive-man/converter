@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1); // New tet with pushed commit
+declare(strict_types = 1); // New tet with pushed commit
 
 function convertToText(float $inputNumber): string
 {
@@ -71,7 +71,8 @@ function getMagnitude(array $group, int $gnum, string $number): string
         return $subResult = $group[$gnum][2];
     }
 
-    switch (substr($number, -1)) {
+    $condition = substr($number, -1);
+    switch ($condition) {
         case 1:
             $subResult = $group[$gnum][0];
             break;
@@ -116,7 +117,7 @@ function fixArray(int $fem, array $arr): array
 
 function getArrays(): array
 {
-    $data = file_get_contents('data.json');
+    $data = file_get_contents('data.json'); //Unescaped UTF-8
     $allArrays = json_decode($data, true, 4);
 
     return $allArrays;

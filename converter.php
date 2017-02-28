@@ -129,13 +129,12 @@ class Number2Text
         return $subResult;
     }
 
-    public function showCurrency(bool $currency = false)
+    public function showCurrency(bool $show = false)
     {
-        $this->curr = $currency;
+        $this->curr = $show;
 
         return $this;
     }
-
 }
 
 $number = 123654987000;
