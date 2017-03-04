@@ -55,9 +55,11 @@ class Number2Text
         if ($allArrays[0] == 'ERROR:') {
             return $message = $allArrays[0] . $allArrays[1];
         }
+
         list($arrUnits, $arrTens, $arrHundreds, $arrMagnitude) = $allArrays;
 
-        $arrChunks = $this->getChunks($iNumber);
+        $rvrsNumber = strrev(strval($iNumber));
+        $arrChunks = str_split($rvrsNumber, 3);
         $numGroups = count($arrChunks);
         $fullResult = null;
 
@@ -112,26 +114,6 @@ class Number2Text
         }
 
         return $allArrays;
-    }
-
-    /**
-     * Returns an array with number divided into chunks
-     *
-     * @param float $iNumber
-     *
-     * @return array
-     */
-    private function getChunks(float $iNumber): array
-    {
-        $arrCh = array();
-        $reversedValue = strrev(strval($iNumber));
-        $reversedSize = strlen($reversedValue);
-
-        for ($i = 0; $i < $reversedSize; $i += 3) {
-            $arrCh[] = strrev(substr($reversedValue, $i, 3));
-        }
-
-        return $arrCh;
     }
 
     /**
@@ -203,7 +185,7 @@ class Number2Text
      *
      * @return $this
      */
-    public function showCurrency(bool $show = false)
+    public function showCurrency(bool $show = true)
     {
         $this->curr = $show;
 
