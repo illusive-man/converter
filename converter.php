@@ -4,17 +4,21 @@ declare(strict_types = 1);
 namespace Converter;
 
 /**
- * Class Number2Text (Russian only at the moment)
- * Converts numbers to their text representation e.g. 12 -> twelve
+ * Converts numbers to their text representation e.g. 12 -> twelve (Russian only at the moment)
  *
- * @author Sergey Kanashin <goujon@mail.ru>
+ * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  *
- * @package Converter
- * @require PHP 7.x+
+ * @package   Converter
+ * @require   PHP 7.x+
  */
+
+
+
 class Number2Text
 {
+    public $curr;
+
     /**
      * Checks the input number, calls main converter function and returns result
      *
@@ -133,8 +137,8 @@ class Number2Text
     /**
      * If a number group has a feminine/masculine name, fix the words array to address that
      *
-     * @param int   $fem - group number
-     * @param array $arr - array with words corresponding to numbers
+     * @param int   $fem :group identificator
+     * @param array $arr :array with words corresponding to group identificator
      *
      * @return array Fixed array
      */
@@ -206,6 +210,8 @@ class Number2Text
         return $this;
     }
 }
+
+//Usage example below:
 
 $number = 11123654987000; // 99.(9) trillion max
 $show = false; //Whether to show currency name
