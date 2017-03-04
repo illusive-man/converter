@@ -1,5 +1,8 @@
 <?php
 
+//Attention: Class version of this Converter is the only up to date version.
+//This procedural version will not be supported anymore.
+
 declare(strict_types = 1); // New tet with pushed commit
 
 function convertToText(float $inputNumber): string
@@ -22,7 +25,13 @@ function num2txt(float $numberConvert): string
     $allArrays = getArrays();
     list($arrUnits, $arrTens, $arrHundreds, $arrMagnitude) = $allArrays;
 
-    $arrChunks = getChunks($numberConvert);
+    $reversedValue = strrev(strval($numberConvert));
+    $arrChunks = str_split($reversedValue, 3);
+    $cnt = 0;
+    foreach ($arrChunks as $chunk) {
+        $arrChunks[$cnt] = strrev($chunk);
+        $cnt++;
+    }
     $numGroups = count($arrChunks);
     $fullResult = null;
 
@@ -63,10 +72,6 @@ function getMagnitude(array $group, int $gnum, string $number): string
     $nls = strlen($number);
     $nxs = substr($number, -2);
 
-    //    if ($gnum == 1) { //If only number needed, without currency word(s)
-    //        return "";
-    //    }
-
     if ($nls > 1 && $nxs >= 11 && $nxs <= 14) {
         return $subResult = $group[$gnum][2];
     }
@@ -87,19 +92,6 @@ function getMagnitude(array $group, int $gnum, string $number): string
     }
 
     return $subResult;
-}
-
-function getChunks(float $inputNumber): array
-{
-    $arrCh = array();
-    $reversedValue = strrev(strval($inputNumber));
-    $reversedSize = strlen($reversedValue);
-
-    for ($i = 0; $i < $reversedSize; $i += 3) {
-        $arrCh[] = strrev(substr($reversedValue, $i, 3));
-    }
-
-    return $arrCh;
 }
 
 function fixArray(int $fem, array $arr): array
