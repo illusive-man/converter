@@ -14,5 +14,6 @@ echo $convert->showCurrency(false)->printNumber(); //Set option and print
 //TODO: убрать из массива слова, кроме единичного (миллион) и добавлять окончания 'a' и 'ов' в коде.
 //TODO: добавить все оставшиеся числительные для больших чисел и массив валют.
 //TODO: удалить файлы процедурной функции и теста.
-//TODO: сделать инсталляцию illusive-man/converter с помощью composer + require phpmath/biginteger.
+//TODO: сделать инсталляцию illusive-man/converter с помощью composer + require phpmath/biginteger
+//TODO: и не забыть удалить соотв. файлы из .gitignore
 //TODO: протестировать с помощью phpUnit.

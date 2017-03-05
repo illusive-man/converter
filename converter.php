@@ -2,7 +2,9 @@
 declare(strict_types = 1);
 
 namespace Converter;
+
 use PHP\Math\BigInteger\BigInteger;
+
 /**
  * Converts numbers to their text representation e.g. 12 -> twelve (Russian only at the moment)
  *
@@ -14,7 +16,7 @@ use PHP\Math\BigInteger\BigInteger;
 class Number2Text
 {
     public $iNumber;
-    public $curr;
+    public $currency;
     private $allArrays = array();
     private $arrUnits = array();
     private $arrTens = array();
@@ -30,7 +32,7 @@ class Number2Text
             $this->arrHundreds,
             $this->arrMagnitude) = $this->allArrays;
 
-        $this->iNumber =  $number;
+        $this->iNumber = $number;
     }
 
     private function loadArrays(): array
@@ -135,7 +137,7 @@ class Number2Text
         $nls = strlen($chunk);
         $nxs = substr($chunk, -2);
 
-        if (!$this->curr && $gnum == 1) {
+        if (!$this->currency && $gnum == 1) {
             return "";
         }
 
@@ -163,9 +165,8 @@ class Number2Text
 
     public function showCurrency(bool $show = true)
     {
-        $this->curr = $show;
+        $this->currency = $show;
 
         return $this;
     }
 }
-
