@@ -2,30 +2,26 @@
 declare(strict_types = 1);
 
 namespace Converter;
-
+use PHP\Math\BigInteger\BigInteger;
 /**
  * Converts numbers to their text representation e.g. 12 -> twelve (Russian only at the moment)
  *
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
- *
- * @package   Converter
+ * @package   Converter v.1.0.3
  * @require   PHP 7.x+
  */
-
 class Number2Text
 {
-    public static $iResult = null;
-    public $curr;
     public $iNumber;
+    public $curr;
     private $allArrays = array();
     private $arrUnits = array();
     private $arrTens = array();
     private $arrHundreds = array();
     private $arrMagnitude = array();
 
-
-    public function __construct($number)
+    public function __construct(BigInteger $number)
     {
         $this->allArrays = $this->loadArrays();
 
@@ -33,14 +29,10 @@ class Number2Text
             $this->arrTens,
             $this->arrHundreds,
             $this->arrMagnitude) = $this->allArrays;
-        $this->iNumber = floatval($number);
+
+        $this->iNumber =  $number;
     }
 
-    /**
-     * Load array data from JSON file
-     *
-     * @return array
-     */
     private function loadArrays(): array
     {
         $jsonFile = __DIR__ . '/data.json';
@@ -58,36 +50,24 @@ class Number2Text
         return $this->allArrays;
     }
 
-    /**
-     * Checks the input number, calls main converter function and returns result
-     *
-     * @return \Converter\Number2Text|string - text result
-     */
     public function printNumber()
     {
-        if ($this->iNumber < 0 || $this->iNumber > 99999999999999) {
-            return $message = 'Error: Input number should be between 0 and 99\'999\'999\'999\'999';
-        }
+//        if ($this->iNumber < new BigInteger('0') || $this->iNumber > new BigInteger('99999999999999') {
+//            return $message = 'Error: Input number should be between 0 and 99\'999\'999\'999\'999';
+//        }
+//        if ($this->iNumber == 0) {  //avoiding all calculations to display such a simple result
+//            return $message = 'ноль рублей';
+//        }
 
-        if ($this->iNumber == 0) {  //avoiding all calculations to display such a simple result
-            return $message = 'ноль рублей';
-        }
-
-        return self::$iResult = $this->num2txt();
+        return $this->num2txt();
     }
 
-    /**
-     * Deconstruct, transform and convert number to its text representation
-     *
-     * @return string
-     */
     private function num2txt(): string
     {
         $message = null;
         if ($this->allArrays[0] == 'ERROR:') {
             return $message = $this->allArrays[0] . $this->allArrays[1];
         }
-
         $arrChunks = $this->getChunks();
         $numGroups = count($arrChunks);
         $fullResult = null;
@@ -123,11 +103,6 @@ class Number2Text
         return $fullResult;
     }
 
-    /**
-     * Returns an array with number divided into chunks
-     *
-     * @return array
-     */
     private function getChunks(): array
     {
         $arrCh = array();
@@ -141,11 +116,6 @@ class Number2Text
         return $arrCh;
     }
 
-    /**
-     * If a number group has a feminine/masculine name, fix the words array to address that
-     *
-     * @param int $fem :group identificator
-     */
     private function fixArray(int $fem): void
     {
         if ($fem == 2) {
@@ -159,16 +129,6 @@ class Number2Text
         return;
     }
 
-    /**
-     * Defines the group name according to its place in a number (millions, thousands, roubles etc.)
-     *
-     * @param int    $gnum
-     * @param string $chunk
-     *
-     * @return string
-     * @internal param string $number
-     *
-     */
     private function getMagnitude(int $gnum, string $chunk): string
     {
         $subResult = null;
@@ -201,13 +161,6 @@ class Number2Text
         return $subResult;
     }
 
-    /**
-     * Defines whether to show the currency name in the end of a string
-     *
-     * @param bool $show
-     *
-     * @return $this
-     */
     public function showCurrency(bool $show = true)
     {
         $this->curr = $show;
@@ -216,11 +169,3 @@ class Number2Text
     }
 }
 
-//Usage example below:
-
-$number = 11123654987000; // 99.(9) trillion max
-
-$convert = new Number2Text($number); //init
-echo $convert->showCurrency(false)->printNumber(); //Set option and print
-echo '<br><br>';
-echo Number2Text::$iResult; //After instantiating, also available as static value without currency name
