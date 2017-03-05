@@ -13,6 +13,12 @@ use PHP\Math\BigInteger\BigInteger;
  * @package   Converter v.1.0.3
  * @require   PHP 7.x+
  */
+
+//DONE: убрать из массива слова, кроме единичного (миллион) и добавлять окончания 'a' и 'ов' в коде.
+//DONE: реализовать механизм для отображения тысяч
+//DONE: добавить все оставшиеся числительные для больших чисел.
+//TODO: добавить массив валют и механизм отображения. Возможно: ->showCurrency('RUB')???.
+
 class Number2Text
 {
     public $iNumber;
@@ -22,15 +28,18 @@ class Number2Text
     private $arrTens = array();
     private $arrHundreds = array();
     private $arrMagnitude = array();
+    private $fullResult;
 
     public function __construct(BigInteger $number)
     {
         $this->allArrays = $this->loadArrays();
 
-        list($this->arrUnits,
+        list(
+            $this->arrUnits,
             $this->arrTens,
             $this->arrHundreds,
-            $this->arrMagnitude) = $this->allArrays;
+            $this->arrMagnitude
+            ) = $this->allArrays;
 
         $this->iNumber = $number;
     }
@@ -99,10 +108,10 @@ class Number2Text
                 $preResult .= $this->getMagnitude($i, $currChunk);
             }
 
-            $fullResult .= $preResult;
+            $this->fullResult .= $preResult;
         }
 
-        return $fullResult;
+        return $this->fullResult;
     }
 
     private function getChunks(): array
@@ -134,33 +143,75 @@ class Number2Text
     private function getMagnitude(int $gnum, string $chunk): string
     {
         $subResult = null;
-        $nls = strlen($chunk);
-        $nxs = substr($chunk, -2);
+        $chunkLength = strlen($chunk);
+        $chunkUnits = substr($chunk, -2);
 
         if (!$this->currency && $gnum == 1) {
             return "";
         }
 
-        if ($nls > 1 && $nxs >= 11 && $nxs <= 14) {
-            return $subResult = $this->arrMagnitude[$gnum][2];
+        if ($chunkLength > 1 && $chunkUnits >= 11 && $chunkUnits <= 14) {
+            if ($gnum == 1) {
+                $subResult = "рублей ";
+            } elseif ($gnum == 2) {
+                $subResult = "тысяч ";
+            } else {
+                $subResult = $this->arrMagnitude[$gnum - 3] . 'ов '; //2
+            }
+
+            return $subResult;
         }
 
-        $condition = substr($chunk, -1);
+        $condition = intval(substr($chunk, -1));
+
+        if ($gnum == 1 || $gnum == 2) {
+            $subResult = $this->getCase($gnum, $condition);
+
+            return $subResult;
+        }
+
+        $offset = $gnum - 3;
+
         switch ($condition) {
+            case -1:
+                break;
             case 1:
-                $subResult = $this->arrMagnitude[$gnum][0];
+                $subResult = $this->arrMagnitude[$offset] . ' '; //0
                 break;
             case 2:
             case 3:
             case 4:
-                $subResult = $this->arrMagnitude[$gnum][1];
+                $subResult = $this->arrMagnitude[$offset] . 'а '; //1
                 break;
             default:
-                $subResult = $this->arrMagnitude[$gnum][2];
+                $subResult = $this->arrMagnitude[$offset] . 'ов '; //2
                 break;
         }
 
         return $subResult;
+    }
+
+    private function getCase(int $group, int $cond): string
+    {
+        if ($group == 1) {
+            if ($cond == 1) {
+                $Result = 'рубль ';
+            } elseif ($cond >= 2 && $cond <= 4) {
+                $Result = 'рубля ';
+            } else {
+                $Result = 'рублей ';
+            }
+        } else {
+            if ($cond == 1) {
+                $Result = 'тысяча ';
+            } elseif ($cond >= 2 && $cond <= 4) {
+                $Result = 'тысячи ';
+            } else {
+                $Result = 'тысяч ';
+            }
+        }
+
+        return $Result;
     }
 
     public function showCurrency(bool $show = true)
