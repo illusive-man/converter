@@ -1,6 +1,6 @@
 Converts given numeric value to its written text representation (in Russian).
 
-UPDATE: integrated phpmath/biginteger library (requires GMP extension being enabled in php.ini)
+UPDATE: integrated phpmath/biginteger library (requires GMP extension being enabled in php.ini) to support almost any existing number!
 
 The reason behind this converter was the fact that most of previously created apps and tools (e.g. Number Words) of the same kind 
 contain pretty big amounts of code (unnecessarily overcomplicated) and sometimes not working properly (Online converter tools like 
@@ -11,7 +11,4 @@ And well known "Number Words" script doesn't support PHP 7.0+. This one does.
  
 Currently uses only Russian wording.
 
-Usage:
-
-`Put data.json, converter.php and bigtest.php to your WebDir and run thу latter.`
 

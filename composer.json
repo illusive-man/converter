@@ -17,11 +17,11 @@
     }
   ],
   "require": {
-    "phpmath/biginteger": "2.0.*"
+    "phpmath/biginteger": "2.*"
   },
   "autoload": {
-    "classmap": [
-      "class"
-    ]
+    "psr-4": {
+      "Converter\\":"class"
+    }
   }
 }
