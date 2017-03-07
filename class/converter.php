@@ -7,7 +7,6 @@ use PHP\Math\BigInteger\BigInteger;
 
 /**
  * Converts any numbers (up to 1.0e+300!) to their text representation e.g. 12 -> twelve (Russian only at the moment)
- *
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  * @package   Converter v.1.0.4
@@ -41,7 +40,7 @@ class Number2Text
 
     private function loadArrays(): array
     {
-        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . 'data.json';
+        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . "data.json";
         if (file_exists($jsonFile) && is_file($jsonFile)) {
             $data = file_get_contents($jsonFile);
             $this->allArrays = json_decode($data, true);

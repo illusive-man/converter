@@ -1,12 +1,11 @@
 <?php
-declare(strict_types = 1);
 require_once('vendor/autoload.php');
-require_once('converter.php');
 use PHP\Math\BigInteger\BigInteger as BigInteger;
+use Converter\Number2Text;
 
 $number = '15554783124983211984';
 $bigint = new BigInteger($number); //Make a BigInt number object
-$convert = new Converter\Number2Text($bigint); //init Converter
+$convert = new Number2Text($bigint); //init Converter
 $textResult = $convert->showCurrency(true)->num2txt(); //Set option and print
 echo $textResult;
 

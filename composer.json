@@ -1,0 +1,27 @@
+{
+  "name": "illusive-man/converter",
+  "description": "Number to text converter",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sergey Kanashin",
+      "email": "goujon@mail.ru",
+      "role": "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/illusive-man/converter"
+    }
+  ],
+  "require": {
+    "phpmath/biginteger": "2.0.*"
+  },
+  "autoload": {
+    "classmap": [
+      "class"
+    ]
+  }
+}
