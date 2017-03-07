@@ -18,5 +18,5 @@
   ],
   "require": {
     "phpmath/biginteger": "2.*"
-  },
+  }
 }
