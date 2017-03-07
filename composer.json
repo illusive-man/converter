@@ -19,9 +19,4 @@
   "require": {
     "phpmath/biginteger": "2.*"
   },
-  "autoload": {
-    "psr-4": {
-      "Converter\\": "class"
-    }
-  }
 }
