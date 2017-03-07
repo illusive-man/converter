@@ -10,13 +10,17 @@
       "role": "Developer"
     }
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/illusive-man/converter"
-    }
-  ],
   "require": {
     "phpmath/biginteger": "2.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Converter\\Number2Text\\": "class"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "process-timeout": 5000,
+    "sort-packages": true
   }
 }
