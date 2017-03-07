@@ -6,21 +6,16 @@ namespace Converter;
 use PHP\Math\BigInteger\BigInteger;
 
 /**
- * Converts numbers to their text representation e.g. 12 -> twelve (Russian only at the moment)
+ * Converts any numbers (up to 1.0e+300!) to their text representation e.g. 12 -> twelve (Russian only at the moment)
  *
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
- * @package   Converter v.1.0.3
- * @require   PHP 7.x+
+ * @package   Converter v.1.0.4
+ * @require   PHP 7.0+
  */
-
-//DONE: убрать из массива слова, кроме единичного (миллион) и добавлять окончания 'a' и 'ов' в коде.
-//DONE: реализовать механизм для отображения тысяч
-//DONE: добавить все оставшиеся числительные для больших чисел.
-//TODO: добавить массив валют и механизм отображения. Возможно: ->showCurrency('RUB')???.
-
 class Number2Text
 {
+    const MINUS = 'минус ';
     public $iNumber;
     public $currency;
     private $allArrays = array();
@@ -28,7 +23,7 @@ class Number2Text
     private $arrTens = array();
     private $arrHundreds = array();
     private $arrMagnitude = array();
-    private $fullResult;
+    private $fullResult = '';
 
     public function __construct(BigInteger $number)
     {
@@ -46,7 +41,7 @@ class Number2Text
 
     private function loadArrays(): array
     {
-        $jsonFile = __DIR__ . '/data.json';
+        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . 'data.json';
         if (file_exists($jsonFile) && is_file($jsonFile)) {
             $data = file_get_contents($jsonFile);
             $this->allArrays = json_decode($data, true);
@@ -61,27 +56,23 @@ class Number2Text
         return $this->allArrays;
     }
 
-    public function printNumber()
-    {
-//        if ($this->iNumber < new BigInteger('0') || $this->iNumber > new BigInteger('99999999999999') {
-//            return $message = 'Error: Input number should be between 0 and 99\'999\'999\'999\'999';
+//    public function printNumber()
+//    {
+//        if ($this->iNumber == '0') {
+//            return "ноль рублей"; //TODO: сделать определения нулевого (или отрицательного) числа в коде.
 //        }
-//        if ($this->iNumber == 0) {  //avoiding all calculations to display such a simple result
-//            return $message = 'ноль рублей';
-//        }
+//
+//        return $this->num2txt();
+//    }
 
-        return $this->num2txt();
-    }
-
-    private function num2txt(): string
+    public function num2txt(): string
     {
         $message = null;
-        if ($this->allArrays[0] == 'ERROR:') {
+        if (!is_array($this->allArrays[0])) {
             return $message = $this->allArrays[0] . $this->allArrays[1];
         }
         $arrChunks = $this->getChunks();
         $numGroups = count($arrChunks);
-        $fullResult = null;
 
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = $arrChunks[$i - 1];
@@ -172,20 +163,12 @@ class Number2Text
 
         $offset = $gnum - 3;
 
-        switch ($condition) {
-            case -1:
-                break;
-            case 1:
-                $subResult = $this->arrMagnitude[$offset] . ' '; //0
-                break;
-            case 2:
-            case 3:
-            case 4:
-                $subResult = $this->arrMagnitude[$offset] . 'а '; //1
-                break;
-            default:
-                $subResult = $this->arrMagnitude[$offset] . 'ов '; //2
-                break;
+        if ($condition == 1) {
+            $subResult = $this->arrMagnitude[$offset] . ' '; //0
+        } elseif ($condition >= 2 && $condition <= 4) {
+            $subResult = $this->arrMagnitude[$offset] . 'а '; //1
+        } else {
+            $subResult = $this->arrMagnitude[$offset] . 'ов '; //2
         }
 
         return $subResult;
@@ -195,23 +178,23 @@ class Number2Text
     {
         if ($group == 1) {
             if ($cond == 1) {
-                $Result = 'рубль ';
+                $result = 'рубль ';
             } elseif ($cond >= 2 && $cond <= 4) {
-                $Result = 'рубля ';
+                $result = 'рубля ';
             } else {
-                $Result = 'рублей ';
+                $result = 'рублей ';
             }
         } else {
             if ($cond == 1) {
-                $Result = 'тысяча ';
+                $result = 'тысяча ';
             } elseif ($cond >= 2 && $cond <= 4) {
-                $Result = 'тысячи ';
+                $result = 'тысячи ';
             } else {
-                $Result = 'тысяч ';
+                $result = 'тысяч ';
             }
         }
 
-        return $Result;
+        return $result;
     }
 
     public function showCurrency(bool $show = true)
