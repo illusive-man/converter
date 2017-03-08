@@ -3,13 +3,13 @@ declare(strict_types = 1);
 
 namespace Converter\Number2Text;
 
-use PHP\Math\BigInteger\BigInteger;
+use PHP\Math\BigInteger\BigInteger as BigInteger;
 
 /**
  * Converts any numbers (up to 1.0e+300!) to their text representation e.g. 12 -> twelve (Russian only at the moment)
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
- * @package   Converter v.1.0.4
+ * @package   Converter v.1.1.3
  * @require   PHP 7.0+
  */
 class Number2Text
