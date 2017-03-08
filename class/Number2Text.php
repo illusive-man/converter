@@ -14,7 +14,6 @@ use PHP\Math\BigInteger\BigInteger as BigInteger;
  */
 class Number2Text
 {
-    const MINUS = 'минус ';
     public $iNumber;
     public $currency;
     private $allArrays = array();
@@ -22,10 +21,11 @@ class Number2Text
     private $arrTens = array();
     private $arrHundreds = array();
     private $arrMagnitude = array();
-    private $fullResult = '';
+    private $fullResult;
 
-    public function __construct(BigInteger $number)
+    public function __construct(string $number)
     {
+        $this->iNumber = new BigInteger($number);
         $this->allArrays = $this->loadArrays();
 
         list(
@@ -34,8 +34,6 @@ class Number2Text
             $this->arrHundreds,
             $this->arrMagnitude
             ) = $this->allArrays;
-
-        $this->iNumber = $number;
     }
 
     private function loadArrays(): array
@@ -55,21 +53,32 @@ class Number2Text
         return $this->allArrays;
     }
 
-//    public function printNumber()
-//    {
-//        if ($this->iNumber == '0') {
-//            return "ноль рублей"; //TODO: сделать определения нулевого (или отрицательного) числа в коде.
-//        }
-//
-//        return $this->num2txt();
-//    }
+    public function withCurrency(bool $show = true)
+    {
+        $this->currency = $show;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        $this->currency = true;
+
+        return $this->num2txt();
+    }
 
     public function num2txt(): string
     {
+        if ($this->iNumber == '0') { //TODO: сделать определения нулевого (или отрицательного) числа в коде.
+
+            return $this->fullResult =  "ноль ";
+        }
+
         $message = null;
         if (!is_array($this->allArrays[0])) {
             return $message = $this->allArrays[0] . $this->allArrays[1];
         }
+        $this->fullResult = '';
         $arrChunks = $this->getChunks();
         $numGroups = count($arrChunks);
 
@@ -78,8 +87,8 @@ class Number2Text
             $this->fixArray($i);
 
             $preResult = null;
-            $centis = intval($currChunk / 100);
-            $decimals = $currChunk - $centis * 100;
+            $centis = (int)($currChunk / 100);
+            $decimals = (int)($currChunk - $centis * 100);
 
             if ($centis > 0) {
                 $preResult .= $this->arrHundreds[$centis - 1];
@@ -89,7 +98,7 @@ class Number2Text
                 $decimals = 0;
             }
             if ($decimals != 0) {
-                $preResult .= $this->arrTens[intval($decimals / 10) - 1];
+                $preResult .= $this->arrTens[($decimals / 10) - 1];
             }
             if ($decimals % 10 != 0) {
                 $preResult .= $this->arrUnits[$decimals % 10 - 1];
@@ -107,7 +116,7 @@ class Number2Text
     private function getChunks(): array
     {
         $arrCh = array();
-        $rvrsValue = strrev(strval($this->iNumber));
+        $rvrsValue = strrev((string)$this->iNumber);
         $rvrsSize = strlen($rvrsValue);
 
         for ($i = 0; $i < $rvrsSize; $i += 3) {
@@ -132,12 +141,12 @@ class Number2Text
 
     private function getMagnitude(int $gnum, string $chunk): string
     {
-        $subResult = null;
+        $subResult = '';
         $chunkLength = strlen($chunk);
         $chunkUnits = substr($chunk, -2);
 
         if (!$this->currency && $gnum == 1) {
-            return "";
+            return $subResult;
         }
 
         if ($chunkLength > 1 && $chunkUnits >= 11 && $chunkUnits <= 14) {
@@ -152,7 +161,7 @@ class Number2Text
             return $subResult;
         }
 
-        $condition = intval(substr($chunk, -1));
+        $condition = (int)substr($chunk, -1);
 
         if ($gnum == 1 || $gnum == 2) {
             $subResult = $this->getCase($gnum, $condition);
@@ -194,12 +203,5 @@ class Number2Text
         }
 
         return $result;
-    }
-
-    public function showCurrency(bool $show = true)
-    {
-        $this->currency = $show;
-
-        return $this;
     }
 }

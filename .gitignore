@@ -1,2 +1,6 @@
 vendor
+build
+tests
 .idea
+*.xml
+*.dist

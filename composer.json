@@ -17,5 +17,8 @@
     "psr-4": {
       "Converter\\Number2Text\\": "class"
     }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.0"
   }
 }
