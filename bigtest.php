@@ -1,7 +1,7 @@
 <?php
 require_once('vendor/autoload.php');
 use PHP\Math\BigInteger\BigInteger as BigInteger;
-use Converter\Number2Text;
+use Converter\Number2Text\Number2Text;
 
 $number = '15554783124983211984';
 $bigint = new BigInteger($number); //Make a BigInt number object

@@ -17,10 +17,5 @@
     "psr-4": {
       "Converter\\Number2Text\\": "class"
     }
-  },
-  "config": {
-    "optimize-autoloader": true,
-    "process-timeout": 5000,
-    "sort-packages": true
   }
 }
