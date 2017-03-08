@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Converter;
+namespace Converter\Number2Text;
 
 use PHP\Math\BigInteger\BigInteger;
 
