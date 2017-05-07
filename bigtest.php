@@ -1,7 +1,17 @@
 <?php
+declare(strict_types = 1);
 require_once('vendor/autoload.php');
 use Converter\Number2Text\Number2Text;
 
-$number = '100001010011101111000110'; //Must be always a string!
-$convert = new Number2Text($number); //init Converter
-echo $convert->num2txt(); // Prints just a number
+for ($i = 1; $i <= 1; $i++) {
+    $number = '101000000';//Number2Text::makeBignumber();
+    $convert = new Number2Text($number);
+    echo $number;
+    echo '<br>';
+    $convert->withCurrency(true);
+    echo $convert->num2txt();
+    echo '<br><br>';
+}
+
+echo 'GenNumber: ' . Number2Text::makeBignumber(5, false);
+    echo '<br><br>';
