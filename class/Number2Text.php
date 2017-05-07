@@ -6,7 +6,7 @@ namespace Converter\Number2Text;
 use PHP\Math\BigInteger\BigInteger as BigInteger;
 
 /**
- * Converts any numbers (up to 1.0e+300!) to their text representation e.g. 12 -> twelve (Russian only at the moment)
+ * Converts any numbers (up to 1e+303!) to their text representation e.g. 12 -> twelve (Russian only at the moment)
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  * @package   Converter v.1.1.3
@@ -14,15 +14,55 @@ use PHP\Math\BigInteger\BigInteger as BigInteger;
  */
 class Number2Text
 {
+    /**
+     * The number we need to convert and print in words
+     */
     public $iNumber;
+
+    /**
+     * // This flag indicates if we want to include currency name to the output
+     */
     public $currency;
-    private $allArrays = array();
-    private $arrUnits = array();
-    private $arrTens = array();
-    private $arrHundreds = array();
-    private $arrMagnitude = array();
+
+    /**
+     * An array that contains all other arrays imported from data.json
+     */
+    private $allArrays = [];
+
+    /**
+    * An array that contains names of units and teens
+    */
+    private $arrUnits = [];
+
+    /**
+    * An array that contains names of tens
+    */
+    private $arrTens = [];
+
+    /**
+    * An array that contains names of hundreds
+    */
+    private $arrHundreds = [];
+
+    /**
+    * An array that contains exponent's names
+    */
+    private $arrExponents = [];
+
+    /**
+     * An array that contains register's names
+     */
+    private $arrRegisters = [];
+
+    /**
+    * Contains the converted number string
+    */
     private $fullResult;
 
+    /**
+     * Number2Text constructor - Creates BigInt number and loads data from data.json file into arrays
+     * @param string $number Contains the input number being converted
+     */
     public function __construct(string $number)
     {
         $this->iNumber = new BigInteger($number);
@@ -32,52 +72,58 @@ class Number2Text
             $this->arrUnits,
             $this->arrTens,
             $this->arrHundreds,
-            $this->arrMagnitude
+            $this->arrExponents,
+            $this->arrRegisters
             ) = $this->allArrays;
     }
 
+    /**
+     * Load data from .json file and populate corresponding arrays
+     * @return array Contains all arrays
+     */
     private function loadArrays(): array
     {
         $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . "data.json";
+
         if (file_exists($jsonFile) && is_file($jsonFile)) {
             $data = file_get_contents($jsonFile);
             $this->allArrays = json_decode($data, true);
         } else {
-            $this->allArrays = array(
-                'ERROR:',
-                ' Please make sure that file data.json is installed in (' .
-                __DIR__ . ') directory!'
-            );
+            //TODO: Make error handling methods or class
+            //throw new Exception('File data.json doesn\'t exist in the directory!');
         }
 
         return $this->allArrays;
     }
 
-    public function withCurrency(bool $show = true)
+    public static function makeBignumber(int $value = 0, bool $generator = true): string
     {
-        $this->currency = $show;
+        $mantissa = '';
 
-        return $this;
+        if ($generator && $value === 0) {
+            $mantissa = mt_rand(1, 100);
+            $value = mt_rand(1, 303);
+        } elseif (!$generator) {
+            $mantissa = '1';
+        }
+
+        $num = str_repeat('0', $value);
+        
+        return $mantissa . $num;
     }
 
-    public function __toString()
+    public function withCurrency(bool $show = true)
     {
-        $this->currency = true;
-
-        return $this->num2txt();
+        return $this->currency = $show;
     }
 
     public function num2txt(): string
     {
-        if ($this->iNumber == '0') { //TODO: сделать определения нулевого (или отрицательного) числа в коде.
+//        if ($this->iNumber == '0') {
+//            //TODO: сделать определения нулевого (или отрицательного) числа до вызова метода.
+//            return $this->fullResult = "ноль ";
+//        }
 
-            return $this->fullResult =  "ноль ";
-        }
-
-        $message = null;
-        if (!is_array($this->allArrays[0])) {
-            return $message = $this->allArrays[0] . $this->allArrays[1];
-        }
         $this->fullResult = '';
         $arrChunks = $this->getChunks();
         $numGroups = count($arrChunks);
@@ -90,21 +136,21 @@ class Number2Text
             $centis = (int)($currChunk / 100);
             $decimals = (int)($currChunk - $centis * 100);
 
-            if ($centis > 0) {
+            if ($centis >= 1) {
                 $preResult .= $this->arrHundreds[$centis - 1];
             }
-            if ($decimals > 0 && $decimals < 20) {
+            if ($decimals >= 1 && $decimals <= 19) {
                 $preResult .= $this->arrUnits[$decimals - 1];
                 $decimals = 0;
             }
-            if ($decimals != 0) {
+            if ($decimals !== 0) {
                 $preResult .= $this->arrTens[($decimals / 10) - 1];
             }
-            if ($decimals % 10 != 0) {
+            if ($decimals % 10 !== 0) {
                 $preResult .= $this->arrUnits[$decimals % 10 - 1];
             }
-            if ($currChunk != 0 || $i == 1) {
-                $preResult .= $this->getMagnitude($i, $currChunk);
+            if ($currChunk != 0 || $i === 1) {
+                $preResult .= $this->getRegister($i, $currChunk);
             }
 
             $this->fullResult .= $preResult;
@@ -115,7 +161,7 @@ class Number2Text
 
     private function getChunks(): array
     {
-        $arrCh = array();
+        $arrCh = [];
         $rvrsValue = strrev((string)$this->iNumber);
         $rvrsSize = strlen($rvrsValue);
 
@@ -128,7 +174,7 @@ class Number2Text
 
     private function fixArray(int $fem): void
     {
-        if ($fem == 2) {
+        if ($fem === 2) {
             $this->arrUnits[0] = 'одна ';
             $this->arrUnits[1] = 'две ';
         } else {
@@ -139,44 +185,40 @@ class Number2Text
         return;
     }
 
-    private function getMagnitude(int $gnum, string $chunk): string
+    private function getRegister(int $gnum, string $chunk): string
     {
         $subResult = '';
         $chunkLength = strlen($chunk);
         $chunkUnits = substr($chunk, -2);
 
-        if (!$this->currency && $gnum == 1) {
+        $offset = abs($gnum - 3);
+        $exponent = $this->arrExponents[$offset];
+        $lastDigit = (int)substr($chunk, -1);
+
+        if (!$this->currency && $gnum === 1) {
             return $subResult;
         }
 
-        if ($chunkLength > 1 && $chunkUnits >= 11 && $chunkUnits <= 14) {
-            if ($gnum == 1) {
-                $subResult = "рублей ";
-            } elseif ($gnum == 2) {
-                $subResult = "тысяч ";
+        if ($chunkLength >= 2 && $chunkUnits >= 11 && $chunkUnits <= 14) {
+            if ($gnum === 1 || $gnum === 2) {
+                $subResult = $this->arrRegisters[$gnum * $gnum + 1];
             } else {
-                $subResult = $this->arrMagnitude[$gnum - 3] . 'ов '; //2
+                $subResult = $exponent . 'ов '; //2
             }
 
             return $subResult;
         }
 
-        $condition = (int)substr($chunk, -1);
-
-        if ($gnum == 1 || $gnum == 2) {
-            $subResult = $this->getCase($gnum, $condition);
-
-            return $subResult;
+        if ($lastDigit === 1) {
+            $subResult = $exponent . ' '; //0
+        } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
+            $subResult = $exponent . 'а '; //1
+        } else {
+            $subResult = $exponent . 'ов '; //2
         }
 
-        $offset = $gnum - 3;
-
-        if ($condition == 1) {
-            $subResult = $this->arrMagnitude[$offset] . ' '; //0
-        } elseif ($condition >= 2 && $condition <= 4) {
-            $subResult = $this->arrMagnitude[$offset] . 'а '; //1
-        } else {
-            $subResult = $this->arrMagnitude[$offset] . 'ов '; //2
+        if ($gnum === 1 || $gnum === 2) {
+            $subResult = $this->getCase($gnum, $lastDigit);
         }
 
         return $subResult;
@@ -184,21 +226,21 @@ class Number2Text
 
     private function getCase(int $group, int $cond): string
     {
-        if ($group == 1) {
-            if ($cond == 1) {
-                $result = 'рубль ';
+        if ($group === 1) {
+            if ($cond === 1) {
+                $result = $this->arrRegisters[0];
             } elseif ($cond >= 2 && $cond <= 4) {
-                $result = 'рубля ';
+                $result = $this->arrRegisters[1];
             } else {
-                $result = 'рублей ';
+                $result = $this->arrRegisters[2];
             }
         } else {
-            if ($cond == 1) {
-                $result = 'тысяча ';
+            if ($cond === 1) {
+                $result = $this->arrRegisters[3];
             } elseif ($cond >= 2 && $cond <= 4) {
-                $result = 'тысячи ';
+                $result = $this->arrRegisters[4];
             } else {
-                $result = 'тысяч ';
+                $result = $this->arrRegisters[5];
             }
         }
 
