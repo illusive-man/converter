@@ -4,7 +4,7 @@ require_once('vendor/autoload.php');
 use Converter\Number2Text\Number2Text;
 
 for ($i = 1; $i <= 1; $i++) {
-    $number = '101000000';//Number2Text::makeBignumber();
+    $number = '11010';//Number2Text::makeBignumber();
     $convert = new Number2Text($number);
     echo $number;
     echo '<br>';
@@ -13,5 +13,5 @@ for ($i = 1; $i <= 1; $i++) {
     echo '<br><br>';
 }
 
-echo 'GenNumber: ' . Number2Text::makeBignumber(5, false);
+echo 'GenNumber: ' . Number2Text::makeBignumber(10, false);
     echo '<br><br>';
