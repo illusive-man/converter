@@ -1,7 +1,8 @@
 vendor
 build
 tests
-archive
+old
 .idea
 *.xml
 *.dist
+*.bat

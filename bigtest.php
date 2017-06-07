@@ -1,17 +1,21 @@
 <?php
 declare(strict_types = 1);
+
+require 'class/Profiler.php';
+use Converter\Profiler\Profiler;
+$profiler = new Profiler();
+$profiler->Start();
+
 require_once('vendor/autoload.php');
+
 use Converter\Number2Text\Number2Text;
 
 for ($i = 1; $i <= 1; $i++) {
-    $number = '11010';//Number2Text::makeBignumber();
-    $convert = new Number2Text($number);
-    echo $number;
-    echo '<br>';
-    $convert->withCurrency(true);
-    echo $convert->num2txt();
+    $source = '-100';//Number2Text::makeBignumber();
+    $number = new Number2Text($source);
+    //$number->withCurrency();
+    echo $source . "<br>";
+    echo $number->convert();
     echo '<br><br>';
 }
-
-echo 'GenNumber: ' . Number2Text::makeBignumber(10, false);
-    echo '<br><br>';
+$profiler->Stop();

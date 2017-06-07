@@ -15,10 +15,11 @@
   },
   "autoload": {
     "psr-4": {
-      "Converter\\Number2Text\\": "class"
+      "Converter\\Number2Text\\": "class",
+      "Converter\\Profiler\\": "class"
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.0"
+    "phpunit/phpunit": "^6.2"
   }
 }
