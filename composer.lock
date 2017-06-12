@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d368510c0f0bc2bad57d5d2a57833fc4",
+    "content-hash": "fb7da141b9fb2a464938a1a176f10c4f",
     "packages": [
         {
             "name": "phpmath/biginteger",
@@ -1513,6 +1513,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.0"
+    },
     "platform-dev": []
 }

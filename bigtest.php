@@ -13,7 +13,7 @@ use Converter\Number2Text\Number2Text;
 for ($i = 1; $i <= 1; $i++) {
     $source = '-100';//Number2Text::makeBignumber();
     $number = new Number2Text($source);
-    //$number->withCurrency();
+    $number->withCurrency();
     echo $source . "<br>";
     echo $number->convert();
     echo '<br><br>';

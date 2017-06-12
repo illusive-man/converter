@@ -3,8 +3,8 @@ declare(strict_types = 1);
 
 namespace Converter\Number2Text;
 
+use Exception;
 use PHP\Math\BigInteger\BigInteger;
-use PHPUnit\Runner\Exception;
 
 /**
  * Converts a number (up to 1e+303) to its text representation e.g. 12 -> twelve (Russian only at the moment)
@@ -15,19 +15,25 @@ use PHPUnit\Runner\Exception;
  */
 class Number2Text
 {
+    public $allArrays = [];
+
     private $iNumber;
     private $currency;
-    private $allArrays = [];
-    private $arrUnits;
-    private $arrTens;
-    private $arrHundreds;
-    private $arrExponents;
-    private $arrRegisters;
-    private $fullResult;
+    private $fullResult = null;
     private $zero = 'ноль ';
     private $dataFile = "data.json";
     private $sign = '';
+    private $arrHundreds;
+    private $arrTens;
+    private $arrUnits;
+    private $arrExponents;
+    private $arrRegisters;
 
+    /**
+     * Number2Text constructor.
+     * @param string $number Number to be converted
+     * @throws \Exception If loading data from JSON file goes wrong
+     */
     public function __construct(string $number)
     {
         if (substr($number, 0, 1) == '-') {
@@ -39,7 +45,7 @@ class Number2Text
 
         try {
             $this->allArrays = $this->loadArrays();
-        } catch (\TypeError $e) {
+        } catch (Exception $e) {
             throw new Exception('File data.json doesn\'t exist in the directory!');
         }
 
@@ -54,9 +60,10 @@ class Number2Text
         if (file_exists($jsonFile) && is_file($jsonFile)) {
             $data = file_get_contents($jsonFile);
             $arrays = json_decode($data, true);
+            return $arrays;
+        } else {
+            throw new Exception();
         }
-
-        return $arrays;
     }
 
     public static function makeBignumber(int $value = 0, bool $generator = true): string
@@ -111,8 +118,8 @@ class Number2Text
 
     private function makeChunksArray(): array
     {
-        $rvrsValue = strrev((string)$this->iNumber);
         //Converting object to string before reversing is mandatory, otherwise it won't work
+        $rvrsValue = strrev((string)$this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
         $arrCh = explode("\r\n", rtrim($chunks));
 
@@ -174,7 +181,6 @@ class Number2Text
 
             return $subResult;
         }
-
         if ($chunkPos === 1 || $chunkPos === 2) {
             $subResult = $this->getCase($chunkPos, $lastDigit);
         } else {
@@ -221,11 +227,5 @@ class Number2Text
         }
 
         return $result;
-    }
-
-    //Used only for PHPUnit testing's sake by granting access to class' private properties.
-    public function getAllArrays(): array
-    {
-        return $this->allArrays;
     }
 }
