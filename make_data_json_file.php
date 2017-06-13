@@ -36,13 +36,13 @@ $arrHundreds =  ['сто ','двести ','триста ','четыреста '
 $arrRegisters = ['рубль','рубля','рублей','тысяча ','тысячи ','тысяч '];
 //@formatter:on
 
-$file = 'data.json';
+$file = 'class/data.json';
 if (file_exists($file)) {
     file_put_contents($file, '');
 }
 $arrays = [$arrUnits, $arrTens, $arrHundreds, $arrExponents, $arrRegisters];
 $json_data = json_encode($arrays, JSON_UNESCAPED_UNICODE);
-$result = file_put_contents($file, $json_data, FILE_TEXT);
+$result = file_put_contents($file, $json_data);
 if ($result) {
     echo 'Данные экспортированы в файл ' . $file . ' успешно!';
 } else {

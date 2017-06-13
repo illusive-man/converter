@@ -11,12 +11,10 @@ use PHP\Math\BigInteger\BigInteger;
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  * @package   Converter v.1.1.3
- * @require   PHP 7.0+
  */
-class Number2Text
+final class Number2Text
 {
     public $allArrays = [];
-
     private $iNumber;
     private $currency;
     private $fullResult = null;
@@ -36,10 +34,7 @@ class Number2Text
      */
     public function __construct(string $number)
     {
-        if (substr($number, 0, 1) == '-') {
-            $this->sign = 'минус ';
-            $number = ltrim($number, '-');
-        }
+        $number = $this->checkNumber($number);
 
         $this->iNumber = new BigInteger($number);
 
@@ -53,6 +48,20 @@ class Number2Text
             $this->arrExponents, $this->arrRegisters) = $this->allArrays;
     }
 
+    private function checkNumber(string $number): string
+    {
+        if (substr($number, 0, 1) == '-') {
+            $this->sign = 'минус ';
+            $number = ltrim($number, '-');
+        }
+
+        if ($number === '0') {
+            $this->sign = '';
+        }
+
+        return $number;
+    }
+
     private function loadArrays(): array
     {
         $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . $this->dataFile;
@@ -60,6 +69,7 @@ class Number2Text
         if (file_exists($jsonFile) && is_file($jsonFile)) {
             $data = file_get_contents($jsonFile);
             $arrays = json_decode($data, true);
+
             return $arrays;
         } else {
             throw new Exception();
@@ -82,9 +92,9 @@ class Number2Text
         return $mantissa . $num;
     }
 
-    public function withCurrency(bool $show = true): bool
+    public function withCurrency(bool $use = true): bool
     {
-        return $this->currency = $show;
+        return $this->currency = $use;
     }
 
     public function convert(): string
@@ -100,11 +110,7 @@ class Number2Text
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = strrev($arrChunks[$i - 1]);
             $this->fixArray($i);
-            $preResult = null;
-            $centum = (int)($currChunk / 100);
-            $decem = (int)$currChunk - $centum * 100;
-
-            $preResult = $this->makeWords($centum, $decem);
+            $preResult = $this->makeWords($currChunk);
 
             if ($currChunk != 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
@@ -137,9 +143,11 @@ class Number2Text
         }
     }
 
-    private function makeWords(int $cent, int $dec): string
+    private function makeWords(string $cChunk): string
     {
         $resWords = '';
+        $cent = (int)($cChunk / 100);
+        $dec = (int)$cChunk - $cent * 100;
 
         if ($cent >= 1) {
             $resWords .= $this->arrHundreds[$cent - 1];
@@ -161,7 +169,6 @@ class Number2Text
     private function getRegister(int $chunkPos, string $chunkData): string
     {
         $subResult = '';
-        $chunkLength = strlen($chunkData);
         $chunkUnits = substr($chunkData, -2);
 
         $lastDigit = (int)substr($chunkData, -1);
@@ -172,7 +179,7 @@ class Number2Text
             return $subResult;
         }
 
-        if ($chunkLength >= 2 && $chunkUnits >= 11 && $chunkUnits <= 14) {
+        if ($chunkUnits >= 11 && $chunkUnits <= 14) {
             if ($chunkPos === 1 || $chunkPos === 2) {
                 $subResult = $this->arrRegisters[$chunkPos ** 2 + 1];
             } else {
@@ -181,6 +188,7 @@ class Number2Text
 
             return $subResult;
         }
+
         if ($chunkPos === 1 || $chunkPos === 2) {
             $subResult = $this->getCase($chunkPos, $lastDigit);
         } else {
