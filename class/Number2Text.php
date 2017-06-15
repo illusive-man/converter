@@ -133,7 +133,7 @@ final class Number2Text
         $chunks = chunk_split($rvrsValue, 3);
         $arrCh = explode("\r\n", rtrim($chunks));
 
-        return $arrCh;
+        return $arrCh; //Tester comment
     }
 
     /**
