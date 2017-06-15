@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Converter\FunctionalTests;
 
 use PHPUnit\Framework\TestCase;
-use Converter\Number2Text\Number2Text;
+use Converter\Core\Number2Text;
 
 class FunctionalTests extends TestCase
 {
@@ -20,11 +20,11 @@ class FunctionalTests extends TestCase
         $this->assertFileExists($autoldFile);
     }
 
-    public function testReturnsLoadedArraysCountIs5()
-    {
-        $number = new Number2Text('2');
-        $this->assertTrue((count($number->allArrays)) == 5);
-    }
+//    public function testReturnsLoadedArraysCountIs5()
+//    {
+//        $number = new Number2Text('2');
+//        $this->assertTrue((count($number->allArrays)) == 5);
+//    }
 
     public function testSimpleNumber()
     {
@@ -67,6 +67,14 @@ class FunctionalTests extends TestCase
     public function testZeroNumberWithCurrency()
     {
         $number = new Number2Text('0');
+        $number->withCurrency();
+        $expected = "ноль рублей";
+        $this->assertEquals($expected, $number->convert());
+    }
+
+    public function testNegativeZeroNumberWithCurrency()
+    {
+        $number = new Number2Text('-0');
         $number->withCurrency();
         $expected = "ноль рублей";
         $this->assertEquals($expected, $number->convert());
@@ -215,5 +223,4 @@ EOD;
         $number = new Number2Text('154');
         $this->assertFalse($number->withCurrency(false));
     }
-
 }

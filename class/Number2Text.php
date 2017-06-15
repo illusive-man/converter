@@ -1,20 +1,18 @@
 <?php
 declare(strict_types = 1);
 
-namespace Converter\Number2Text;
+namespace Converter\Core;
 
 use Exception;
 use PHP\Math\BigInteger\BigInteger;
 
 /**
- * Converts a number (up to 1e+303) to its text representation e.g. 12 -> twelve (Russian only at the moment)
+ * Converts a number (up to 1e+303) to its text representation e.g. 12 -> двенадцать (Russian only at the moment)
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
- * @package   Converter v.1.1.3
  */
 final class Number2Text
 {
-    public $allArrays = [];
     private $iNumber;
     private $currency;
     private $fullResult = null;
@@ -28,24 +26,15 @@ final class Number2Text
     private $arrRegisters;
 
     /**
-     * Number2Text constructor.
+     * Number2Text constructor: Checks the number,
      * @param string $number Number to be converted
-     * @throws \Exception If loading data from JSON file goes wrong
+     * @throws Exception
      */
     public function __construct(string $number)
     {
         $number = $this->checkNumber($number);
-
         $this->iNumber = new BigInteger($number);
-
-        try {
-            $this->allArrays = $this->loadArrays();
-        } catch (Exception $e) {
-            throw new Exception('File data.json doesn\'t exist in the directory!');
-        }
-
-        list($this->arrUnits, $this->arrTens, $this->arrHundreds,
-            $this->arrExponents, $this->arrRegisters) = $this->allArrays;
+        $this->initConfig();
     }
 
     private function checkNumber(string $number): string
@@ -54,7 +43,6 @@ final class Number2Text
             $this->sign = 'минус ';
             $number = ltrim($number, '-');
         }
-
         if ($number === '0') {
             $this->sign = '';
         }
@@ -62,17 +50,23 @@ final class Number2Text
         return $number;
     }
 
-    private function loadArrays(): array
+    /**
+     * Loads fuctional data from JSON file to arrays with that data.
+     * @throws \Exception
+     */
+    private function initConfig()
     {
         $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . $this->dataFile;
         $arrays = null;
         if (file_exists($jsonFile) && is_file($jsonFile)) {
-            $data = file_get_contents($jsonFile);
-            $arrays = json_decode($data, true);
-
-            return $arrays;
+                $data = file_get_contents($jsonFile);
+                $arrays = json_decode($data, true);
+                list($this->arrUnits, $this->arrTens, $this->arrHundreds,
+                    $this->arrExponents, $this->arrRegisters) = $arrays;
         } else {
-            throw new Exception();
+            require_once(__DIR__ . DIRECTORY_SEPARATOR . "..\make_data_json_file.php");
+            createData();
+            $this->initConfig();
         }
     }
 
@@ -92,6 +86,11 @@ final class Number2Text
         return $mantissa . $num;
     }
 
+    /**
+     * Flag that indicates whether to print out the currency name along the number
+     * @param bool $use
+     * @return bool
+     */
     public function withCurrency(bool $use = true): bool
     {
         return $this->currency = $use;
@@ -122,6 +121,11 @@ final class Number2Text
         return $this->fullResult = $this->sign . $fullResult;
     }
 
+    /**
+     * Creates an array with reversed 3-digit chunks of given number
+     * Example: '1125468' => array['864', '521', '1']
+     * @return array
+     */
     private function makeChunksArray(): array
     {
         //Converting object to string before reversing is mandatory, otherwise it won't work
@@ -132,6 +136,10 @@ final class Number2Text
         return $arrCh;
     }
 
+    /**
+     * Changes the array ne name set data array to reflect that (Russian specific language construct)
+     * @param int $fem
+     */
     private function fixArray(int $fem): void
     {
         if ($fem === 2) {

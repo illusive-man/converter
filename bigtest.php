@@ -6,7 +6,7 @@ $profiler = new Profiler();
 $profiler->Start();
 
 require_once('vendor/autoload.php');
-use Converter\Number2Text\Number2Text;
+use Converter\Core\Number2Text;
 
 for ($i = 1; $i <= 1; $i++) {
     $source = '-0';//Number2Text::makeBignumber();
