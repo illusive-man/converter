@@ -17,10 +17,11 @@
   "autoload": {
     "psr-4": {
       "Converter\\Core\\": "class",
-      "Converter\\Profiler\\": "class"
+      "Converter\\Profiler\\": "class",
+      "Converter\\Generator\\": "class"
     }
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.2"
+    "phpunit/phpunit": "6.*"
   }
 }

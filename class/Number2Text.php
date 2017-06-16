@@ -7,13 +7,13 @@ use Exception;
 use PHP\Math\BigInteger\BigInteger;
 
 /**
- * Converts a number (up to 1e+303) to its text representation e.g. 12 -> двенадцать (Russian only at the moment)
+ * Converts a number (up to 1e+303) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
 final class Number2Text
 {
-    private $iNumber;
+    public $iNumber;
     private $currency;
     private $fullResult = null;
     private $zero = 'ноль ';
@@ -24,20 +24,21 @@ final class Number2Text
     private $arrUnits;
     private $arrExponents;
     private $arrRegisters;
+    public $expSize;
 
     /**
-     * Number2Text constructor: Checks the number,
+     * Number2Text constructor: Analyzes and creates number as a BigNumber object
      * @param string $number Number to be converted
      * @throws Exception
      */
     public function __construct(string $number)
     {
-        $number = $this->checkNumber($number);
+        $number = $this->checkNegative($number);
         $this->iNumber = new BigInteger($number);
         $this->initConfig();
     }
 
-    private function checkNumber(string $number): string
+    private function checkNegative(string $number): string
     {
         if (substr($number, 0, 1) == '-') {
             $this->sign = 'минус ';
@@ -51,7 +52,8 @@ final class Number2Text
     }
 
     /**
-     * Loads fuctional data from JSON file to arrays with that data.
+     * Loads fuctional data from JSON file and populates arrays with that data.
+     * If data.json is not exist in class dir, creates that file.
      * @throws \Exception
      */
     private function initConfig()
@@ -63,27 +65,13 @@ final class Number2Text
                 $arrays = json_decode($data, true);
                 list($this->arrUnits, $this->arrTens, $this->arrHundreds,
                     $this->arrExponents, $this->arrRegisters) = $arrays;
+                $this->expSize = count($this->arrExponents) + 1;
         } else {
             require_once(__DIR__ . DIRECTORY_SEPARATOR . "..\make_data_json_file.php");
             createData();
+            //TODO: Replace recursive call with separate method(?)
             $this->initConfig();
         }
-    }
-
-    public static function makeBignumber(int $value = 0, bool $generator = true): string
-    {
-        $mantissa = '';
-
-        if ($generator && $value === 0) {
-            $mantissa = (string)mt_rand(1, 100);
-            $value = mt_rand(1, 303);
-        } elseif (!$generator) {
-            $mantissa = '1';
-        }
-
-        $num = str_repeat('0', $value);
-
-        return $mantissa . $num;
     }
 
     /**
@@ -133,7 +121,7 @@ final class Number2Text
         $chunks = chunk_split($rvrsValue, 3);
         $arrCh = explode("\r\n", rtrim($chunks));
 
-        return $arrCh; //Tester comment
+        return $arrCh;
     }
 
     /**

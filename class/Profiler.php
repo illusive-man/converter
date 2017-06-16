@@ -17,7 +17,7 @@ class Profiler
     {
         $this->end = microtime(true) - $this->start;
 
-        echo sprintf("%f\n", $this->end);
+        echo 'Execution time (including PSR-4 files autoload): '. sprintf("%01.3f", $this->end) . ' sec.';
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Converter\FunctionalTests;
+namespace Converter;
 
 use PHPUnit\Framework\TestCase;
 use Converter\Core\Number2Text;
@@ -101,38 +101,6 @@ class FunctionalTests extends TestCase
         $this->assertEquals($expected, $number->convert());
     }
 
-    public function testBigNumberGeneratorReturnsNotNull()
-    {
-        $number = null;
-        //$this->assertNull($number);
-        $number = Number2Text::makeBignumber();
-        $this->assertNotNull($number);
-    }
-
-    public function testReturnsOneCentum()
-    {
-        $num = '1' . Number2Text::makeBignumber(303);
-        $number = new Number2Text($num);
-        $expected = "один центиллион ";
-        $this->assertEquals($expected, $number->convert());
-    }
-
-    public function testReturnsOneOctoginta()
-    {
-        $num = '1' . Number2Text::makeBignumber(243);
-        $number = new Number2Text($num);
-        $expected = "один октогинтиллион ";
-        $this->assertEquals($expected, $number->convert());
-    }
-
-    public function testReturnsOneSexaginta()
-    {
-        $num = '1' . Number2Text::makeBignumber(183);
-        $number = new Number2Text($num);
-        $expected = "один сексагинтиллион ";
-        $this->assertEquals($expected, $number->convert());
-    }
-
     public function testReturnsNumberWithCurrency1()
     {
         $num = '108451';
@@ -203,13 +171,6 @@ class FunctionalTests extends TestCase
 триллионов четыреста шестнадцать миллиардов триста шестнадцать миллионов пятьсот десять тысяч шестьсот пятьдесят 
 EOD;
         $this->assertEquals(strtr($expected, ["\r\n" => ""]), $number->convert());
-    }
-
-    public function testMakeBignumberStaticMethod()
-    {
-        $bnum = Number2Text::makeBignumber(9, false);
-        $expected = "1000000000";
-        $this->assertEquals($expected, $bnum);
     }
 
     public function testCurrencyMethodReturnsTrue()

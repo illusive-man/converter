@@ -4,6 +4,8 @@ old
 *.xml
 .bash_history
 .gitconfig
+numbers.xlsx
+.viminfo
 
 # Created by https://www.gitignore.io/api/windows,composer,phpstorm
 
