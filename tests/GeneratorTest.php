@@ -55,7 +55,7 @@ class GeneratorTest extends TestCase
 
     public function testZeroArgumentsCheck()
     {
-        $number = new Generator(0, 0);
+        $number = new Generator(0, 15, true);
         $bnum = $number->generate(false);
         $expected = "0";
         $this->assertEquals($expected, $bnum);

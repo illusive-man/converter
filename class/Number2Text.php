@@ -7,7 +7,7 @@ use Exception;
 use PHP\Math\BigInteger\BigInteger;
 
 /**
- * Converts a number (up to 1e+303) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
+ * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
@@ -17,14 +17,15 @@ final class Number2Text
     private $currency;
     private $fullResult = null;
     private $zero = 'ноль ';
-    private $dataFile = "data.json";
+    private static $dataFile = "data.json";
     private $sign = '';
-    private $arrHundreds;
-    private $arrTens;
-    private $arrUnits;
-    private $arrExponents;
-    private $arrRegisters;
-    public $expSize;
+    private static $arrHundreds;
+    private static $arrTens;
+    private static $arrUnits;
+    private static $arrExponents;
+    private static $arrRegisters;
+    public static $expSize;
+    private $cache = [];
 
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
@@ -33,14 +34,14 @@ final class Number2Text
      */
     public function __construct(string $number)
     {
-        $number = $this->checkNegative($number);
-        $this->iNumber = new BigInteger($number);
-        $this->initConfig();
+        $absolute = $this->checkNegative($number);
+        $this->iNumber = new BigInteger($absolute);
+        self::initConfig();
     }
 
     private function checkNegative(string $number): string
     {
-        if (substr($number, 0, 1) == '-') {
+        if (substr($number, 0, 1) == '-') { //TODO: Try to implement as closure
             $this->sign = 'минус ';
             $number = ltrim($number, '-');
         }
@@ -56,21 +57,21 @@ final class Number2Text
      * If data.json is not exist in class dir, creates that file.
      * @throws \Exception
      */
-    private function initConfig()
+    public static function initConfig()
     {
-        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . $this->dataFile;
+        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . self::$dataFile;
         $arrays = null;
         if (file_exists($jsonFile) && is_file($jsonFile)) {
                 $data = file_get_contents($jsonFile);
                 $arrays = json_decode($data, true);
-                list($this->arrUnits, $this->arrTens, $this->arrHundreds,
-                    $this->arrExponents, $this->arrRegisters) = $arrays;
-                $this->expSize = count($this->arrExponents) + 1;
+                list(self::$arrUnits, self::$arrTens, self::$arrHundreds,
+                    self::$arrExponents, self::$arrRegisters) = $arrays;
+                self::$expSize = count(self::$arrExponents) + 1;
         } else {
             require_once(__DIR__ . DIRECTORY_SEPARATOR . "..\make_data_json_file.php");
             createData();
             //TODO: Replace recursive call with separate method(?)
-            $this->initConfig();
+            self::initConfig();
         }
     }
 
@@ -84,7 +85,7 @@ final class Number2Text
         return $this->currency = $use;
     }
 
-    public function convert(): string
+    public function convert(): string //TODO: MEMOIZATION
     {
         $fullResult = null;
         $arrChunks = $this->makeChunksArray();
@@ -125,17 +126,17 @@ final class Number2Text
     }
 
     /**
-     * Changes the array ne name set data array to reflect that (Russian specific language construct)
+     * Changes the array femine name set data array to reflect that (Russian specific language construct)
      * @param int $fem
      */
     private function fixArray(int $fem): void
     {
         if ($fem === 2) {
-            $this->arrUnits[0] = 'одна ';
-            $this->arrUnits[1] = 'две ';
+            self::$arrUnits[0] = 'одна ';
+            self::$arrUnits[1] = 'две ';
         } else {
-            $this->arrUnits[0] = 'один ';
-            $this->arrUnits[1] = 'два ';
+            self::$arrUnits[0] = 'один ';
+            self::$arrUnits[1] = 'два ';
         }
     }
 
@@ -146,17 +147,17 @@ final class Number2Text
         $dec = (int)$cChunk - $cent * 100;
 
         if ($cent >= 1) {
-            $resWords .= $this->arrHundreds[$cent - 1];
+            $resWords .= self::$arrHundreds[$cent - 1];
         }
         if ($dec >= 1 && $dec <= 19) {
-            $resWords .= $this->arrUnits[$dec - 1];
+            $resWords .= self::$arrUnits[$dec - 1];
             $dec = 0;
         }
         if ($dec !== 0) {
-            $resWords .= $this->arrTens[$dec / 10 - 1];
+            $resWords .= self::$arrTens[$dec / 10 - 1];
         }
         if ($dec % 10 !== 0) {
-            $resWords .= $this->arrUnits[$dec % 10 - 1];
+            $resWords .= self::$arrUnits[$dec % 10 - 1];
         }
 
         return $resWords;
@@ -169,7 +170,7 @@ final class Number2Text
 
         $lastDigit = (int)substr($chunkData, -1);
         $offset = abs($chunkPos - 3);
-        $exponent = $this->arrExponents[$offset];
+        $exponent = self::$arrExponents[$offset];
 
         if (!$this->currency && $chunkPos === 1) {
             return $subResult;
@@ -177,7 +178,7 @@ final class Number2Text
 
         if ($chunkUnits >= 11 && $chunkUnits <= 14) {
             if ($chunkPos === 1 || $chunkPos === 2) {
-                $subResult = $this->arrRegisters[$chunkPos ** 2 + 1];
+                $subResult = self::$arrRegisters[$chunkPos ** 2 + 1];
             } else {
                 $subResult = $exponent . 'ов ';
             }
@@ -217,7 +218,7 @@ final class Number2Text
                 }
         }
 
-        return $this->arrRegisters[$result];
+        return self::$arrRegisters[$result];
     }
 
     private function addSuffix(int $lastDigit, string $exponent): string
