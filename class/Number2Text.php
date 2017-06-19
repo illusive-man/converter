@@ -13,19 +13,18 @@ use PHP\Math\BigInteger\BigInteger;
  */
 final class Number2Text
 {
-    public $iNumber;
+    private $iNumber;
     private $currency;
     private $fullResult = null;
     private $zero = 'ноль ';
-    private static $dataFile = "data.json";
     private $sign = '';
+    public static $expSize;
     private static $arrHundreds;
     private static $arrTens;
     private static $arrUnits;
     private static $arrExponents;
     private static $arrRegisters;
-    public static $expSize;
-    private $cache = [];
+
 
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
@@ -34,9 +33,9 @@ final class Number2Text
      */
     public function __construct(string $number)
     {
-        $absolute = $this->checkNegative($number);
-        $this->iNumber = new BigInteger($absolute);
-        self::initConfig();
+        $this->iNumber = $this->checkNegative($number);
+        //$this->iNumber = new BigInteger($absolute);
+        self::loadAllData();
     }
 
     private function checkNegative(string $number): string
@@ -52,28 +51,6 @@ final class Number2Text
         return $number;
     }
 
-    /**
-     * Loads fuctional data from JSON file and populates arrays with that data.
-     * If data.json is not exist in class dir, creates that file.
-     * @throws \Exception
-     */
-    public static function initConfig()
-    {
-        $jsonFile = __DIR__ . DIRECTORY_SEPARATOR . self::$dataFile;
-        $arrays = null;
-        if (file_exists($jsonFile) && is_file($jsonFile)) {
-                $data = file_get_contents($jsonFile);
-                $arrays = json_decode($data, true);
-                list(self::$arrUnits, self::$arrTens, self::$arrHundreds,
-                    self::$arrExponents, self::$arrRegisters) = $arrays;
-                self::$expSize = count(self::$arrExponents) + 1;
-        } else {
-            require_once(__DIR__ . DIRECTORY_SEPARATOR . "..\make_data_json_file.php");
-            createData();
-            //TODO: Replace recursive call with separate method(?)
-            self::initConfig();
-        }
-    }
 
     /**
      * Flag that indicates whether to print out the currency name along the number
@@ -98,7 +75,7 @@ final class Number2Text
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = strrev($arrChunks[$i - 1]);
             $this->fixArray($i);
-            $preResult = $this->makeWords($currChunk);
+            $preResult = $this->makeWords((int)$currChunk);
 
             if ($currChunk != 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
@@ -140,11 +117,12 @@ final class Number2Text
         }
     }
 
-    private function makeWords(string $cChunk): string
+    private function makeWords(int $cChunk): string
     {
         $resWords = '';
+
         $cent = (int)($cChunk / 100);
-        $dec = (int)$cChunk - $cent * 100;
+        $dec = $cChunk - $cent * 100;
 
         if ($cent >= 1) {
             $resWords .= self::$arrHundreds[$cent - 1];
@@ -233,4 +211,48 @@ final class Number2Text
 
         return $result;
     }
+
+//@formatter:off
+    public static function loadAllData(): void
+    {
+
+        self::$arrExponents = ['миллион','миллиард','триллион','квадриллион','квинтиллион','секстиллион','септиллион',
+            'октиллион','нониллион','дециллион','ундециллион','дуодециллион','тредециллион','кваттордециллион',
+            'квиндециллион','сексдециллион','септендециллион','октодециллион','новемдециллион','вигинтиллион',
+            'унвигинтиллион','дуовигинтиллион','тревигинтиллион','кватторвигинтиллион','квинвигинтиллион',
+            'сексвигинтиллион','септенвигинтиллион','октовигинтиллион','новемвигинтиллион','тригинтиллион',
+            'унтригинтиллион','дуотригинтиллион','третригинтиллион','кватортригинтиллион','квинтригинтиллион',
+            'секстригинтиллион','септентригинтиллион','октотригинтиллион','новемтригинтиллион','квадрагинтиллион',
+            'унквадрагинтиллион','дуоквадрагинтиллион','треквадрагинтиллион','кваторквадрагинтиллион',
+            'квинквадрагинтиллион','сексквадрагинтиллион','септенквадрагинтиллион','октоквадрагинтиллион',
+            'новемквадрагинтиллион','квинквагинтиллион','унквинкагинтиллион','дуоквинкагинтиллион',
+            'треквинкагинтиллион','кваторквинкагинтиллион','квинквинкагинтиллион','сексквинкагинтиллион',
+            'септенквинкагинтиллион','октоквинкагинтиллион','новемквинкагинтиллион','сексагинтиллион',
+            'унсексагинтиллион','дуосексагинтиллион','тресексагинтиллион','кваторсексагинтиллион','квинсексагинтиллион',
+            'секссексагинтиллион','септенсексагинтиллион','октосексагинтиллион','новемсексагинтиллион',
+            'септагинтиллион','унсептагинтиллион','дуосептагинтиллион','тресептагинтиллион','кваторсептагинтиллион',
+            'квинсептагинтиллион','секссептагинтиллион','септенсептагинтиллион','октосептагинтиллион',
+            'новемсептагинтиллион','октогинтиллион','уноктогинтиллион','дуооктогинтиллион','треоктогинтиллион',
+            'кватороктогинтиллион','квиноктогинтиллион','сексоктогинтиллион','септоктогинтиллион','октооктогинтиллион',
+            'новемоктогинтиллион','нонагинтиллион','уннонагинтиллион','дуононагинтиллион','тренонагинтиллион',
+            'кваторнонагинтиллион','квиннонагинтиллион','секснонагинтиллион','септеннонагинтиллион',
+            'октононагинтиллион','новемнонагинтиллион','центиллион','анцентиллион','дуоцентиллион','трецентиллион',
+            'кватторцентиллион','квинцентиллион','сексцентиллион','септемцентиллион','октоцентиллион','новемцентиллион',
+            'децицентиллион'];
+
+        self::$arrUnits = ['один ','два ','три ','четыре ','пять ','шесть ','семь ', 'восемь ', 'девять ','десять ',
+            'одиннадцать ','двенадцать ','тринадцать ','четырнадцать ','пятнадцать ','шестнадцать ','семнадцать ',
+            'восемнадцать ','девятнадцать '];
+
+        self::$arrTens =  ['десять ','двадцать ','тридцать ','сорок ','пятьдесят ','шестьдесят ','семьдесят ',
+                    'восемьдесят ','девяносто '];
+
+        self::$arrHundreds =  ['сто ','двести ','триста ','четыреста ','пятьсот ',
+                        'шестьсот ','семьсот ','восемьсот ','девятьсот '];
+
+        self::$arrRegisters = ['рубль','рубля','рублей','тысяча ','тысячи ','тысяч '];
+
+        self::$expSize = count(self::$arrExponents) + 1;
+    }
+    //@formatter:on
 }

@@ -25,7 +25,7 @@ class Generator
      */
     public function __construct(int $mantissa = -1, int $exponent = -1, bool $negative = false)
     {
-        Number2Text::initConfig();
+        Number2Text::loadAllData();
         if ($mantissa === -1 && $exponent === -1) {
             $this->mantissa = mt_rand(0, 99);
             $this->exponent = mt_rand(1, Number2Text::$expSize * 3);
