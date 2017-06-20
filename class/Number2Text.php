@@ -13,7 +13,6 @@ final class Number2Text
     private $iNumber;
     private $currency;
     private $fullResult = null;
-    private $zero = 'ноль ';
     private $sign = '';
     public static $expSize;
     private static $arrHundreds;
@@ -28,11 +27,11 @@ final class Number2Text
      */
     public function __construct(string $number)
     {
-        $this->iNumber = $this->checkNegative($number);
+        $this->iNumber = $this->prepNumber($number);
         self::loadAllData();
     }
 
-    private function checkNegative(string $number): string
+    private function prepNumber(string $number): string
     {
         if (substr($number, 0, 1) == '-') { //TODO: Try to implement as closure
             $this->sign = 'минус ';
@@ -61,7 +60,7 @@ final class Number2Text
         $numGroups = count($arrChunks);
 
         if ($this->iNumber == '0') {
-            $fullResult = $this->zero;
+            $fullResult = 'ноль ';
         }
 
         for ($i = $numGroups; $i >= 1; $i--) {
