@@ -3,9 +3,6 @@ declare(strict_types = 1);
 
 namespace Converter\Core;
 
-use Exception;
-use PHP\Math\BigInteger\BigInteger;
-
 /**
  * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
  * @author    Sergey Kanashin <goujon@mail.ru>
@@ -25,16 +22,13 @@ final class Number2Text
     private static $arrExponents;
     private static $arrRegisters;
 
-
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
      * @param string $number Number to be converted
-     * @throws Exception
      */
     public function __construct(string $number)
     {
         $this->iNumber = $this->checkNegative($number);
-        //$this->iNumber = new BigInteger($absolute);
         self::loadAllData();
     }
 
@@ -47,10 +41,8 @@ final class Number2Text
         if ($number === '0') {
             $this->sign = '';
         }
-
         return $number;
     }
-
 
     /**
      * Flag that indicates whether to print out the currency name along the number
@@ -80,10 +72,8 @@ final class Number2Text
             if ($currChunk != 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
             }
-
             $fullResult .= $preResult;
         }
-
         return $this->fullResult = $this->sign . $fullResult;
     }
 
@@ -150,7 +140,7 @@ final class Number2Text
         $offset = abs($chunkPos - 3);
         $exponent = self::$arrExponents[$offset];
 
-        if (!$this->currency && $chunkPos === 1) {
+        if (!$this->currency && $chunkPos === 1) { //return empty string if number is up to 3 numbers
             return $subResult;
         }
 
@@ -176,26 +166,13 @@ final class Number2Text
     private function getCase(int $group, int $cond): string
     {
         $result = null;
-        switch ($group) {
-            case 1:
-                if ($cond === 1) {
-                    $result = 0;
-                } elseif ($cond >= 2 && $cond <= 4) {
-                    $result = 1;
-                } else {
-                    $result = 2;
-                }
-                break;
-            case 2:
-                if ($cond === 1) {
-                    $result = 3;
-                } elseif ($cond >= 2 && $cond <= 4) {
-                    $result = 4;
-                } else {
-                    $result = 5;
-                }
+        if ($cond === 1) {
+            $group == 1 ? $result = 0 : $result = 3;
+        } elseif ($cond >= 2 && $cond <= 4) {
+            $group == 1 ? $result = 1 : $result = 4;
+        } else {
+            $group == 1 ? $result = 2 : $result = 5;
         }
-
         return self::$arrRegisters[$result];
     }
 
