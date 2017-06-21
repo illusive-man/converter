@@ -17,7 +17,7 @@ $zerofill = false;
 $instGen = new Generator();
 $source = $instGen->generate($zerofill);
 $number = new Number2Text($source);
-//$number->withCurrency();
+$number->currency(true);
 
 $power = $instGen->exponent;
 $base = $instGen->mantissa;

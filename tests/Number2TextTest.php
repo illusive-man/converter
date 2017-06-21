@@ -33,7 +33,7 @@ class FunctionalTests extends TestCase
     {
         $num = '-905';
         $number = new Number2Text($num);
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "минус девятьсот пять рублей";
         $this->assertEquals($expected, $number->convert());
     }
@@ -55,7 +55,7 @@ class FunctionalTests extends TestCase
     public function testZeroNumberWithCurrency()
     {
         $number = new Number2Text('0');
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "ноль рублей";
         $this->assertEquals($expected, $number->convert());
     }
@@ -63,7 +63,7 @@ class FunctionalTests extends TestCase
     public function testNegativeZeroNumberWithCurrency()
     {
         $number = new Number2Text('-0');
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "ноль рублей";
         $this->assertEquals($expected, $number->convert());
     }
@@ -93,7 +93,7 @@ class FunctionalTests extends TestCase
     {
         $num = '108451';
         $number = new Number2Text($num);
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "сто восемь тысяч четыреста пятьдесят один рубль";
         $this->assertEquals($expected, $number->convert());
     }
@@ -102,7 +102,7 @@ class FunctionalTests extends TestCase
     {
         $num = '111002';
         $number = new Number2Text($num);
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "сто одиннадцать тысяч два рубля";
         $this->assertEquals($expected, $number->convert());
     }
@@ -111,7 +111,7 @@ class FunctionalTests extends TestCase
     {
         $num = '101235';
         $number = new Number2Text($num);
-        $number->withCurrency();
+        $number->currency(true);
         $expected = "сто одна тысяча двести тридцать пять рублей";
         $this->assertEquals($expected, $number->convert());
     }
@@ -164,12 +164,12 @@ EOD;
     public function testCurrencyMethodReturnsTrue()
     {
         $number = new Number2Text('10');
-        $this->assertTrue($number->withCurrency());
+        $this->assertTrue($number->currency(true));
     }
 
     public function testCurrencyMethodReturnsFalse()
     {
         $number = new Number2Text('154');
-        $this->assertFalse($number->withCurrency(false));
+        $this->assertFalse($number->currency());
     }
 }

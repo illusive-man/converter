@@ -12,8 +12,7 @@ final class Number2Text
 {
     private $iNumber;
     private $currency;
-    private $fullResult = null;
-    private $sign = '';
+    private $sign = null;
     public static $expSize;
     private static $arrHundreds;
     private static $arrTens;
@@ -27,10 +26,16 @@ final class Number2Text
      */
     public function __construct(string $number)
     {
-        $this->iNumber = $this->prepNumber($number);
+        $this->prepNumber($number);
         self::loadAllData();
     }
 
+    /**
+     * Defines the sign of the number, returns its absolute value
+     * @param string $number - signed initial number
+     * @property string $this->sign - sign of a number
+     * @return string - unsigned number
+     */
     private function prepNumber(string $number): string
     {
         if (substr($number, 0, 1) == '-') { //TODO: Try to implement as closure
@@ -40,26 +45,26 @@ final class Number2Text
         if ($number === '0') {
             $this->sign = '';
         }
-        return $number;
+        return $this->iNumber =  $number;
     }
 
     /**
      * Flag that indicates whether to print out the currency name along the number
-     * @param bool $use
+     * @param bool $show
      * @return bool
      */
-    public function withCurrency(bool $use = true): bool
+    public function currency(bool $show = false): bool
     {
-        return $this->currency = $use;
+        return $this->currency = $show;
     }
 
     public function convert(): string //TODO: MEMOIZATION
     {
         $fullResult = null;
-        $arrChunks = $this->makeChunksArray();
+        $arrChunks = $this->makeChunks();
         $numGroups = count($arrChunks);
 
-        if ($this->iNumber == '0') {
+        if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
         }
 
@@ -73,7 +78,7 @@ final class Number2Text
             }
             $fullResult .= $preResult;
         }
-        return $this->fullResult = $this->sign . $fullResult;
+        return $this->sign . $fullResult;
     }
 
     /**
@@ -81,7 +86,7 @@ final class Number2Text
      * Example: '1125468' => array['864', '521', '1']
      * @return array
      */
-    private function makeChunksArray(): array
+    private function makeChunks(): array
     {
         //Converting object to string before reversing is mandatory, otherwise it won't work
         $rvrsValue = strrev((string)$this->iNumber);
