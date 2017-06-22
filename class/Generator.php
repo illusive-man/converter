@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Converter\Generator;
+namespace Converter\Tools;
 
 use Converter\Core\Number2Text;
 

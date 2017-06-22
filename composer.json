@@ -16,8 +16,7 @@
   "autoload": {
     "psr-4": {
       "Converter\\Core\\": "class",
-      "Converter\\Profiler\\": "class",
-      "Converter\\Generator\\": "class"
+      "Converter\\Tools\\": "class"
     }
   },
   "require-dev": {

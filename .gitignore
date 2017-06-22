@@ -6,6 +6,7 @@ old
 .gitconfig
 numbers.xlsx
 .viminfo
+known_hosts
 
 # Created by https://www.gitignore.io/api/windows,composer,phpstorm
 

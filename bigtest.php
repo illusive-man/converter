@@ -2,7 +2,7 @@
 declare(strict_types = 1);
 // Since we want to profile all the code, include Profiler class before vendor/autoload.php.
 require_once 'class/Profiler.php';
-use Converter\Profiler\Profiler;
+use Converter\Tools\Profiler;
 $profiler = new Profiler();
 //Start the Profiler
 $profiler->Start();
@@ -10,7 +10,7 @@ $profiler->Start();
 //Autoload dependencies
 require_once('vendor/autoload.php');
 use Converter\Core\Number2Text;
-use Converter\Generator\Generator;
+use Converter\Tools\Generator;
 
 //Generate random numbers and print results of conversion
 $zerofill = false;
