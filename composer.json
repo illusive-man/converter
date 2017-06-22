@@ -11,14 +11,12 @@
     }
   ],
   "require": {
-    "php": "^7.0",
-    "phpmath/biginteger": "2.*"
+    "php": "^7.0"
   },
   "autoload": {
     "psr-4": {
       "Converter\\Core\\": "class",
-      "Converter\\Profiler\\": "class",
-      "Converter\\Generator\\": "class"
+      "Converter\\Tools\\": "class"
     }
   },
   "require-dev": {

@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 namespace Converter;
 
-use Converter\Generator\Generator;
+use Converter\Tools\Generator;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -28,7 +28,7 @@ class GeneratorTest extends TestCase
         $this->assertEquals($expected, $bnum);
     }
 
-    public function testBigNumberGeneratorReturnsNotNull()
+    public function testBigRandomNumberGeneratorReturnsNotNull()
     {
         $bnum = null;
         $number = new Generator();
@@ -36,7 +36,7 @@ class GeneratorTest extends TestCase
         $this->assertNotNull($bnum);
     }
 
-    public function testReturnsZero()
+    public function testGeneratorReturnsZero()
     {
         $number = new Generator(0);
         $bnum = $number->generate();
@@ -53,7 +53,7 @@ class GeneratorTest extends TestCase
         $this->assertEquals($expected, $conc);
     }
 
-    public function testZeroArgumentsCheck()
+    public function testZeroFirstArgumentAndIgnoreOtherCheck()
     {
         $number = new Generator(0, 15, true);
         $bnum = $number->generate(false);
