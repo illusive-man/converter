@@ -194,7 +194,7 @@ final class Number2Text
     }
 
 //@formatter:off
-    public static function loadAllData()
+    public static function loadAllData(): void
     {
 
         self::$arrExponents = ['миллион','миллиард','триллион','квадриллион','квинтиллион','секстиллион','септиллион',
