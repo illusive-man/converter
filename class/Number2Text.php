@@ -45,7 +45,7 @@ final class Number2Text
         if ($number === '0') {
             $this->sign = '';
         }
-        return $this->iNumber =  $number;
+        return $this->iNumber = $number;
     }
 
     /**
