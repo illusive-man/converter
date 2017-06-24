@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Converter\Core;
 
+use Converter\Init\Data;
+
 /**
  * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
  * @author    Sergey Kanashin <goujon@mail.ru>
@@ -10,15 +12,10 @@ namespace Converter\Core;
  */
 final class Number2Text
 {
+    private $data;
     private $iNumber;
     private $currency;
     private $sign = null;
-    public static $expSize;
-    private static $arrHundreds;
-    private static $arrTens;
-    private static $arrUnits;
-    private static $arrExponents;
-    private static $arrRegisters;
 
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
@@ -27,7 +24,7 @@ final class Number2Text
     public function __construct(string $number)
     {
         $this->prepNumber($number);
-        self::loadAllData();
+        $this->data = new Data();
     }
 
     /**
@@ -89,7 +86,7 @@ final class Number2Text
     private function makeChunks(): array
     {
         //Converting object to string before reversing is mandatory, otherwise it won't work
-        $rvrsValue = strrev((string)$this->iNumber);
+        $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
         $arrCh = explode("\r\n", rtrim($chunks));
 
@@ -103,11 +100,11 @@ final class Number2Text
     private function fixArray(int $fem)
     {
         if ($fem === 2) {
-            self::$arrUnits[0] = 'одна ';
-            self::$arrUnits[1] = 'две ';
+            $this->data->arrUnits[0] = 'одна ';
+            $this->data->arrUnits[1] = 'две ';
         } else {
-            self::$arrUnits[0] = 'один ';
-            self::$arrUnits[1] = 'два ';
+            $this->data->arrUnits[0] = 'один ';
+            $this->data->arrUnits[1] = 'два ';
         }
     }
 
@@ -119,17 +116,17 @@ final class Number2Text
         $dec = $cChunk - $cent * 100;
 
         if ($cent >= 1) {
-            $resWords .= self::$arrHundreds[$cent - 1];
+            $resWords .= $this->data->arrHundreds[$cent - 1];
         }
         if ($dec >= 1 && $dec <= 19) {
-            $resWords .= self::$arrUnits[$dec - 1];
+            $resWords .= $this->data->arrUnits[$dec - 1];
             $dec = 0;
         }
         if ($dec !== 0) {
-            $resWords .= self::$arrTens[$dec / 10 - 1];
+            $resWords .= $this->data->arrTens[$dec / 10 - 1];
         }
         if ($dec % 10 !== 0) {
-            $resWords .= self::$arrUnits[$dec % 10 - 1];
+            $resWords .= $this->data->arrUnits[$dec % 10 - 1];
         }
 
         return $resWords;
@@ -142,7 +139,7 @@ final class Number2Text
 
         $lastDigit = (int)substr($chunkData, -1);
         $offset = abs($chunkPos - 3);
-        $exponent = self::$arrExponents[$offset];
+        $exponent = $this->data->arrExponents[$offset];
 
         if (!$this->currency && $chunkPos === 1) { //return empty string if number is up to 3 numbers
             return $subResult;
@@ -150,7 +147,7 @@ final class Number2Text
 
         if ($chunkUnits >= 11 && $chunkUnits <= 14) {
             if ($chunkPos === 1 || $chunkPos === 2) {
-                $subResult = self::$arrRegisters[$chunkPos ** 2 + 1];
+                $subResult = $this->data->arrRegisters[$chunkPos ** 2 + 1];
             } else {
                 $subResult = $exponent . 'ов ';
             }
@@ -177,7 +174,7 @@ final class Number2Text
         } else {
             $group == 1 ? $result = 2 : $result = 5;
         }
-        return self::$arrRegisters[$result];
+        return $this->data->arrRegisters[$result];
     }
 
     private function addSuffix(int $lastDigit, string $exponent): string
@@ -192,48 +189,4 @@ final class Number2Text
 
         return $result;
     }
-
-//@formatter:off
-    public static function loadAllData()
-    {
-
-        self::$arrExponents = ['миллион','миллиард','триллион','квадриллион','квинтиллион','секстиллион','септиллион',
-            'октиллион','нониллион','дециллион','ундециллион','дуодециллион','тредециллион','кваттордециллион',
-            'квиндециллион','сексдециллион','септендециллион','октодециллион','новемдециллион','вигинтиллион',
-            'унвигинтиллион','дуовигинтиллион','тревигинтиллион','кватторвигинтиллион','квинвигинтиллион',
-            'сексвигинтиллион','септенвигинтиллион','октовигинтиллион','новемвигинтиллион','тригинтиллион',
-            'унтригинтиллион','дуотригинтиллион','третригинтиллион','кватортригинтиллион','квинтригинтиллион',
-            'секстригинтиллион','септентригинтиллион','октотригинтиллион','новемтригинтиллион','квадрагинтиллион',
-            'унквадрагинтиллион','дуоквадрагинтиллион','треквадрагинтиллион','кваторквадрагинтиллион',
-            'квинквадрагинтиллион','сексквадрагинтиллион','септенквадрагинтиллион','октоквадрагинтиллион',
-            'новемквадрагинтиллион','квинквагинтиллион','унквинкагинтиллион','дуоквинкагинтиллион',
-            'треквинкагинтиллион','кваторквинкагинтиллион','квинквинкагинтиллион','сексквинкагинтиллион',
-            'септенквинкагинтиллион','октоквинкагинтиллион','новемквинкагинтиллион','сексагинтиллион',
-            'унсексагинтиллион','дуосексагинтиллион','тресексагинтиллион','кваторсексагинтиллион','квинсексагинтиллион',
-            'секссексагинтиллион','септенсексагинтиллион','октосексагинтиллион','новемсексагинтиллион',
-            'септагинтиллион','унсептагинтиллион','дуосептагинтиллион','тресептагинтиллион','кваторсептагинтиллион',
-            'квинсептагинтиллион','секссептагинтиллион','септенсептагинтиллион','октосептагинтиллион',
-            'новемсептагинтиллион','октогинтиллион','уноктогинтиллион','дуооктогинтиллион','треоктогинтиллион',
-            'кватороктогинтиллион','квиноктогинтиллион','сексоктогинтиллион','септоктогинтиллион','октооктогинтиллион',
-            'новемоктогинтиллион','нонагинтиллион','уннонагинтиллион','дуононагинтиллион','тренонагинтиллион',
-            'кваторнонагинтиллион','квиннонагинтиллион','секснонагинтиллион','септеннонагинтиллион',
-            'октононагинтиллион','новемнонагинтиллион','центиллион','анцентиллион','дуоцентиллион','трецентиллион',
-            'кватторцентиллион','квинцентиллион','сексцентиллион','септемцентиллион','октоцентиллион','новемцентиллион',
-            'децицентиллион'];
-
-        self::$arrUnits = ['один ','два ','три ','четыре ','пять ','шесть ','семь ', 'восемь ', 'девять ','десять ',
-            'одиннадцать ','двенадцать ','тринадцать ','четырнадцать ','пятнадцать ','шестнадцать ','семнадцать ',
-            'восемнадцать ','девятнадцать '];
-
-        self::$arrTens =  ['десять ','двадцать ','тридцать ','сорок ','пятьдесят ','шестьдесят ','семьдесят ',
-                    'восемьдесят ','девяносто '];
-
-        self::$arrHundreds =  ['сто ','двести ','триста ','четыреста ','пятьсот ',
-                        'шестьсот ','семьсот ','восемьсот ','девятьсот '];
-
-        self::$arrRegisters = ['рубль','рубля','рублей','тысяча ','тысячи ','тысяч '];
-
-        self::$expSize = count(self::$arrExponents) + 1;
-    }
-    //@formatter:on
 }
