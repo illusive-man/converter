@@ -23,7 +23,7 @@ $base = MainGen::$mantissa;
 $base_check = strlen((string)($base / 10));
 
 if ($base_check == 1) {
-    $base = $base /10;
+    $base = $base / 10;
     $power += 1;
 }
 

@@ -100,7 +100,7 @@ final class Number2Text
      * Changes the array femine name set data array to reflect that (Russian specific language construct)
      * @param int $fem
      */
-    private function fixArray(int $fem): void
+    private function fixArray(int $fem)
     {
         if ($fem === 2) {
             self::$arrUnits[0] = 'одна ';
@@ -109,7 +109,6 @@ final class Number2Text
             self::$arrUnits[0] = 'один ';
             self::$arrUnits[1] = 'два ';
         }
-        return;
     }
 
     private function makeWords(int $cChunk): string
