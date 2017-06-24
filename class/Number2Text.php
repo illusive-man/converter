@@ -109,6 +109,7 @@ final class Number2Text
             self::$arrUnits[0] = 'один ';
             self::$arrUnits[1] = 'два ';
         }
+        return;
     }
 
     private function makeWords(int $cChunk): string
