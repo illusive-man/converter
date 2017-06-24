@@ -10,16 +10,16 @@ $profiler->Start();
 //Autoload dependencies
 require_once('vendor/autoload.php');
 use Converter\Core\Number2Text;
-use Converter\Demo\Generator;
+use Converter\Demo\Generator as MainGen;
 
 //Generate random numbers and print results of conversion
 $zerofill = false;
-$source = Generator::generate();
+$source = MainGen::generate();
 $number = new Number2Text($source);
 $number->currency(true);
 
-$power = Generator::$exponent;
-$base = Generator::$mantissa;
+$power = MainGen::$exponent;
+$base = MainGen::$mantissa;
 $base_check = strlen((string)($base / 10));
 
 if ($base_check == 1) {
@@ -31,7 +31,7 @@ echo '<strong>Input Number: </strong>' . $source . '<br><br>';
 echo '<strong>Exponential form: </strong>';
 if ($base != 0) {
     echo $zerofill === true ? $base . '•10' : 'RND•e';
-    echo Generator::$sign == '-' ? '-' : '+';
+    echo MainGen::$sign == '-' ? '-' : '+';
     echo "<span style='position: relative; bottom: 1ex; font-size: 70%;'>" . $power . "</span>";
 }
 echo '<br><br>';
