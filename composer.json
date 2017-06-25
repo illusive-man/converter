@@ -17,7 +17,8 @@
     "psr-4": {
       "Converter\\Core\\": "class",
       "Converter\\Tools\\": "class",
-      "Converter\\Demo\\": "class"
+      "Converter\\Demo\\": "class",
+      "Converter\\Init\\": "class"
     }
   },
   "require-dev": {

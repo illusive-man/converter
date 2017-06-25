@@ -1,5 +1,7 @@
 <?php
 declare(strict_types = 1);
+namespace Bigtest;
+
 // Since we want to profile all the code, include Profiler class before vendor/autoload.php.
 require_once 'class/Profiler.php';
 use Converter\Tools\Profiler;
@@ -14,7 +16,7 @@ use Converter\Demo\Generator;
 
 //Generate random numbers and print results of conversion
 $zerofill = false;
-$source = Generator::generate();
+$source = Generator::generate(null, null, false, false);
 $number = new Number2Text($source);
 $number->currency(true);
 
@@ -39,4 +41,5 @@ echo '<strong>Converted string: </strong>' . mb_strtoupper($number->convert());
 echo '<br><br>';
 
 //Stop Profiler and show total execution time
-$profiler->Stop();
+$time = $profiler->Stop();
+echo 'Execution time (including PSR-4 files autoload): ' . sprintf("%01.3f", $time) . ' sec.';
