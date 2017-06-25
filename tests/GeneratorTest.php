@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Converter;
 
 use Converter\Demo\Generator;
+use Converter\Init\Data;
+use Converter\Tools\Profiler;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -41,9 +43,17 @@ class GeneratorTest extends TestCase
         $this->assertEquals($expected, $bnum);
     }
 
-    public function testCheckLengthOfGeneratedAgainstPropertyValue()
+    public function testCheckLengthOfGeneratedAgainstPropertyValue1()
     {
         $bnum = Generator::generate(null, null, false, true);
+        $conc = strlen((string)Generator::$mantissa) + Generator::$exponent;
+        $expected = strlen($bnum);
+        $this->assertEquals($expected, $conc);
+    }
+
+    public function testCheckLengthOfGeneratedAgainstPropertyValue2()
+    {
+        $bnum = Generator::generate(2, 10, false, false);
         $conc = strlen((string)Generator::$mantissa) + Generator::$exponent;
         $expected = strlen($bnum);
         $this->assertEquals($expected, $conc);
@@ -55,4 +65,22 @@ class GeneratorTest extends TestCase
         $expected = "0";
         $this->assertEquals($expected, $bnum);
     }
+
+    public function testDataClassMethod()
+    {
+        $inst = new Data();
+        $data = $inst->getExpSize();
+        $expected = count($inst->arrExponents) + 1;
+        $this->assertEquals($expected, $data);
+    }
+
+    public function testProfilerClassMethod1()
+    {
+        $inst = new Profiler();
+        $data = $inst->Start();
+        $expected = $inst->Stop();
+        $this->assertGreaterThan($expected, $data);
+    }
+
+
 }

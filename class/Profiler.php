@@ -10,14 +10,12 @@ class Profiler
 
     public function Start()
     {
-        $this->start = microtime(true);
+        return $this->start = microtime(true);
     }
 
     public function Stop()
     {
-        $this->end = microtime(true) - $this->start;
-
-        echo 'Execution time (including PSR-4 files autoload): ' . sprintf("%01.3f", $this->end) . ' sec.';
+        return $this->end = microtime(true) - $this->start;
     }
 
 }
