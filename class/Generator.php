@@ -1,9 +1,6 @@
 <?php
 declare(strict_types = 1);
-
 namespace Converter\Demo;
-
-//use Converter\Init\Data;
 
 /**
  * Class Generator - Creates demo numbers (max = arrExponent array length * 3) for testing Number2Text class

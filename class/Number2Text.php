@@ -16,7 +16,6 @@ final class Number2Text
     private $iNumber;
     private $currency;
     private $sign = null;
-    private static $cache = [];
 
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
@@ -110,14 +109,9 @@ final class Number2Text
         }
     }
 
-    private function makeWords(int $cChunk, $memoize = false): string
+    private function makeWords(int $cChunk): string
     {
         $resWords = '';
-        if ($memoize) {
-            if (array_key_exists($cChunk, self::$cache)) {
-                return self::$cache[$cChunk]; //Memoization Call
-            }
-        }
         $cent = (int)($cChunk / 100);
         $dec = $cChunk - $cent * 100;
 
@@ -133,9 +127,6 @@ final class Number2Text
         }
         if ($dec % 10 !== 0) {
             $resWords .= $this->data->arrUnits[$dec % 10 - 1];
-        }
-        if ($memoize) {
-            self::$cache[$cChunk] = $resWords; //Memoization Store
         }
         return $resWords;
     }
