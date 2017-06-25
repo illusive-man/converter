@@ -41,4 +41,5 @@ echo '<strong>Converted string: </strong>' . mb_strtoupper($number->convert());
 echo '<br><br>';
 
 //Stop Profiler and show total execution time
-$profiler->Stop();
+$time = $profiler->Stop();
+echo 'Execution time (including PSR-4 files autoload): ' . sprintf("%01.3f", $time) . ' sec.';
