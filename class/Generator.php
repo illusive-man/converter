@@ -32,7 +32,7 @@ class Generator
     ): string {
 
         self::$mantissa = $mantissa ?? mt_rand(0, 99);
-        self::$exponent = $exponent ?? mt_rand(1, 333);  //Number2Text::$expSize * 3
+        self::$exponent = $exponent ?? mt_rand(1, 333);
 
         if ($negative) {
             self::$sign = '-';

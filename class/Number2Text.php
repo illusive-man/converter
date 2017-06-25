@@ -16,6 +16,7 @@ final class Number2Text
     private $iNumber;
     private $currency;
     private $sign = null;
+    private static $cache = [];
 
     /**
      * Number2Text constructor: Analyzes and creates number as a BigNumber object
@@ -35,7 +36,7 @@ final class Number2Text
      */
     private function prepNumber(string $number): string
     {
-        if (substr($number, 0, 1) == '-') { //TODO: Try to implement as closure
+        if (substr($number, 0, 1) == '-') {
             $this->sign = 'минус ';
             $number = ltrim($number, '-');
         }
@@ -55,7 +56,7 @@ final class Number2Text
         return $this->currency = $show;
     }
 
-    public function convert(): string //TODO: MEMOIZATION
+    public function convert(): string
     {
         $fullResult = null;
         $arrChunks = $this->makeChunks();
@@ -67,10 +68,10 @@ final class Number2Text
 
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = strrev($arrChunks[$i - 1]);
-            $this->fixArray($i);
+            $this->fixArray($i, $this->data);
             $preResult = $this->makeWords((int)$currChunk);
 
-            if ($currChunk != 0 || $i === 1) {
+            if ((int)$currChunk !== 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
             }
             $fullResult .= $preResult;
@@ -94,24 +95,29 @@ final class Number2Text
     }
 
     /**
-     * Changes the array femine name set data array to reflect that (Russian specific language construct)
-     * @param int $fem
+     * Change data array so that femine names of units is correct (Russian specific language construct)
+     * @param int $fem - flag that indicates chunk index
+     * @param \Converter\Init\Data $data - Data object with data arrays.
      */
-    private function fixArray(int $fem)
+    private function fixArray(int $fem, Data $data)
     {
         if ($fem === 2) {
-            $this->data->arrUnits[0] = 'одна ';
-            $this->data->arrUnits[1] = 'две ';
+            $data->arrUnits[0] = 'одна ';
+            $data->arrUnits[1] = 'две ';
         } else {
-            $this->data->arrUnits[0] = 'один ';
-            $this->data->arrUnits[1] = 'два ';
+            $data->arrUnits[0] = 'один ';
+            $data->arrUnits[1] = 'два ';
         }
     }
 
-    private function makeWords(int $cChunk): string
+    private function makeWords(int $cChunk, $memoize = false): string
     {
         $resWords = '';
-
+        if ($memoize) {
+            if (array_key_exists($cChunk, self::$cache)) {
+                return self::$cache[$cChunk]; //Memoization Call
+            }
+        }
         $cent = (int)($cChunk / 100);
         $dec = $cChunk - $cent * 100;
 
@@ -128,65 +134,39 @@ final class Number2Text
         if ($dec % 10 !== 0) {
             $resWords .= $this->data->arrUnits[$dec % 10 - 1];
         }
-
+        if ($memoize) {
+            self::$cache[$cChunk] = $resWords; //Memoization Store
+        }
         return $resWords;
     }
 
     private function getRegister(int $chunkPos, string $chunkData): string
     {
         $subResult = '';
-        $chunkUnits = substr($chunkData, -2);
-
-        $lastDigit = (int)substr($chunkData, -1);
-        $offset = abs($chunkPos - 3);
-        $exponent = $this->data->arrExponents[$offset];
-
-        if (!$this->currency && $chunkPos === 1) { //return empty string if number is up to 3 numbers
+        $lastDigits = (int)substr($chunkData, -2);
+        $exponent = $this->data->arrExponents[$chunkPos];
+        if (!$this->currency && $chunkPos === 1) {
             return $subResult;
         }
-
-        if ($chunkUnits >= 11 && $chunkUnits <= 14) {
-            if ($chunkPos === 1 || $chunkPos === 2) {
-                $subResult = $this->data->arrRegisters[$chunkPos ** 2 + 1];
-            } else {
-                $subResult = $exponent . 'ов ';
-            }
-
-            return $subResult;
-        }
-
-        if ($chunkPos === 1 || $chunkPos === 2) {
-            $subResult = $this->getCase($chunkPos, $lastDigit);
-        } else {
-            $subResult = $this->addSuffix($lastDigit, $exponent);
-        }
-
+        $subResult = $exponent . $this->addSuffix($lastDigits, $chunkPos);
         return $subResult;
     }
 
-    private function getCase(int $group, int $cond): string
+    private function addSuffix(int $lastDigits, int $group): string
     {
-        $result = null;
-        if ($cond === 1) {
-            $group == 1 ? $result = 0 : $result = 3;
-        } elseif ($cond >= 2 && $cond <= 4) {
-            $group == 1 ? $result = 1 : $result = 4;
-        } else {
-            $group == 1 ? $result = 2 : $result = 5;
+        if ($group > 3) {
+            $group = 3;
         }
-        return $this->data->arrRegisters[$result];
-    }
-
-    private function addSuffix(int $lastDigit, string $exponent): string
-    {
-        if ($lastDigit === 1) {
-            $result = $exponent . ' ';
-        } elseif ($lastDigit >= 2 && $lastDigit <= 4) {
-            $result = $exponent . 'а ';
+        $last = $lastDigits % 10;
+        if ($lastDigits >= 11 && $lastDigits <= 14) {
+            $result = $this->data->arrSuffix[2][$group];
+        } elseif ($last === 1) {
+            $result = $this->data->arrSuffix[0][$group];
+        } elseif ($last >= 2 && $last <= 4) {
+            $result = $this->data->arrSuffix[1][$group];
         } else {
-            $result = $exponent . 'ов ';
+            $result = $this->data->arrSuffix[2][$group];
         }
-
         return $result;
     }
 }

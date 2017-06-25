@@ -14,7 +14,7 @@ use Converter\Demo\Generator;
 
 //Generate random numbers and print results of conversion
 $zerofill = false;
-$source = Generator::generate();
+$source = Generator::generate(null, null, false, false);
 $number = new Number2Text($source);
 $number->currency(true);
 
