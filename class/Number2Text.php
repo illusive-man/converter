@@ -17,11 +17,7 @@ final class Number2Text
     private $currency;
     private $sign = null;
 
-    /**
-     * Number2Text constructor: Analyzes and creates number as a BigNumber object
-     * @param string $number Number to be converted
-     */
-    final public function __construct(string $number)
+    public function __construct(string $number)
     {
         $this->prepNumber($number);
         $this->data = new Data();
@@ -33,7 +29,7 @@ final class Number2Text
      * @property string $this   ->sign - sign of a number
      * @return string - unsigned number
      */
-    final private function prepNumber(string $number): string
+    private function prepNumber(string $number): string
     {
         if (substr($number, 0, 1) == '-') {
             $this->sign = 'минус ';
@@ -46,17 +42,12 @@ final class Number2Text
         return $this->iNumber = $number;
     }
 
-    /**
-     * Flag that indicates whether to print out the currency name along the number
-     * @param bool $show
-     * @return bool
-     */
-    final public function currency(bool $show = false): bool
+    public function currency(bool $show = false): bool
     {
         return $this->currency = $show;
     }
 
-    final public function convert(): string
+    public function convert(): string
     {
         $fullResult = null;
         $arrChunks = $this->makeChunks();
@@ -85,7 +76,7 @@ final class Number2Text
      * Example: '1125468' => array['864', '521', '1']
      * @return array
      */
-    final private function makeChunks(): array
+    private function makeChunks(): array
     {
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
@@ -99,7 +90,7 @@ final class Number2Text
      * @param int $fem - flag that indicates chunk index
      * @internal param \Converter\Init\Data $data - Data object with data arrays.
      */
-    final private function fixArray(int $fem)
+    private function fixArray(int $fem)
     {
         if ($fem === 2) {
             $this->data->arrUnits[0] = 'одна ';
@@ -110,7 +101,7 @@ final class Number2Text
         }
     }
 
-    final private function makeWords(int $cChunk): string
+    private function makeWords(int $cChunk): string
     {
         $resWords = '';
         $cent = (int)($cChunk / 100);
@@ -133,7 +124,7 @@ final class Number2Text
         return $resWords;
     }
 
-    final private function getRegister(int $chunkPos, int $chunkData): string
+    private function getRegister(int $chunkPos, int $chunkData): string
     {
         $subResult = '';
         $lastDigits = $chunkData % 100;
@@ -143,10 +134,10 @@ final class Number2Text
             return $subResult;
         }
 
-        return $subResult = $exponent . $this->addSuffix($lastDigits, $chunkPos);
+        return $exponent . $this->addSuffix($lastDigits, $chunkPos);
     }
 
-    final private function addSuffix(int $lastDigits, int $group): string
+    private function addSuffix(int $lastDigits, int $group): string
     {
         if ($group > 3) {
             $group = 3;
