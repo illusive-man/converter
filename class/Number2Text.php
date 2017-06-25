@@ -6,7 +6,7 @@ namespace Converter\Core;
 use Converter\Init\Data;
 
 /**
- * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only at the moment).
+ * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
