@@ -1,5 +1,7 @@
 <?php
 declare(strict_types = 1);
+namespace Bigtest;
+
 // Since we want to profile all the code, include Profiler class before vendor/autoload.php.
 require_once 'class/Profiler.php';
 use Converter\Tools\Profiler;
