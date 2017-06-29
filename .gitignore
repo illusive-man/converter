@@ -1,13 +1,26 @@
-build
-old
+build/
+old/
+bigtest.php
 .idea
 *.xml
 .bash_history
 .gitconfig
 numbers.xlsx
 .viminfo
-known_hosts
 .ssh
+
+### CODECEPTION ###
+codecept.phar
+codeception.yml
+?data/
+?output/
+?support/
+acceptance/
+acceptance.suite*
+unit/
+unit.suite*
+functional/
+functional.suite*
 
 # Created by https://www.gitignore.io/api/windows,composer,phpstorm
 

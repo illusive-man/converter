@@ -6,7 +6,7 @@ namespace Converter\Core;
 use Converter\Init\Data;
 
 /**
- * Converts a number (up to 1e+333) to its text representation e.g. 12 -> двенадцать (Russian only).
+ * Converts a number (up to 1e+510) to its text representation e.g. 12 -> двенадцать (Russian only).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
@@ -20,13 +20,12 @@ final class Number2Text
     public function __construct(string $number)
     {
         $this->prepNumber($number);
-        $this->data = new Data();
     }
 
     /**
-     * Defines the sign of the number, returns its absolute value
+     * Defines the sign of the number, returns absolute value
      * @param string    $number - signed initial number
-     * @property string $this   ->sign - sign of a number
+     * @property string $sign - sign of a number
      * @return string - unsigned number
      */
     private function prepNumber(string $number): string
@@ -56,6 +55,8 @@ final class Number2Text
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
         }
+
+        $this->data = new Data();
 
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = (int)strrev($arrChunks[$i - 1]);

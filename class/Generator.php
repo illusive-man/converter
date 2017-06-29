@@ -2,6 +2,8 @@
 declare(strict_types = 1);
 namespace Converter\Demo;
 
+use Converter\Init\Data;
+
 /**
  * Class Generator - Creates demo numbers (max = arrExponent array length * 3) for testing Number2Text class
  * @package Converter\Generator
@@ -28,8 +30,12 @@ class Generator
         bool $zeroFill = true
     ): string {
 
+        $con = new Data();
+        $max = $con->getExpSize() * 3;
+        echo '<br>MAX:', $max, '<br>';
+
         self::$mantissa = $mantissa ?? mt_rand(0, 99);
-        self::$exponent = $exponent ?? mt_rand(1, 333);
+        self::$exponent = $exponent ?? mt_rand(1, $max);
 
         if ($negative) {
             self::$sign = '-';

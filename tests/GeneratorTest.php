@@ -66,11 +66,11 @@ class GeneratorTest extends TestCase
         $this->assertEquals($expected, $bnum);
     }
 
-    public function testDataClassMethod()
+    public function testDataClassReturnsExponentsSize()
     {
         $inst = new Data();
         $data = $inst->getExpSize();
-        $expected = count($inst->arrExponents) + 1;
+        $expected = count($inst->arrExponents) - 2;
         $this->assertEquals($expected, $data);
     }
 
