@@ -4,6 +4,12 @@ namespace Converter\Init;
 
 class Data
 {
+    public $arrExponents;
+    public $arrHundreds;
+    public $arrTens;
+    public $arrUnits;
+    public $arrSuffix;
+
     public function __construct()
     {
         //@formatter:off

@@ -14,54 +14,55 @@ use PHPUnit\Framework\TestCase;
  */
 class GeneratorTests extends TestCase
 {
+    public $handle;
+    public function setUp()
+    {
+        $this->handle = new Generator();
+    }
+
     public function testGeneratePositiveNumberMethod()
     {
-        $bnum = Generator::generate(9, 5);
-        $expected = "900000";
-        $this->assertEquals($expected, $bnum);
+        $bnum = strlen($this->handle->generate(958));
+        $this->assertEquals(958, $bnum);
     }
 
     public function testGenerateNegativeNumberMethod()
     {
-        $bnum = Generator::generate(1, 10, true);
-        $expected = "-10000000000";
-        $this->assertEquals($expected, $bnum);
+        $bnum = strlen($this->handle->generate(100));
+        $this->assertEquals(100, $bnum);
     }
 
     public function testBigRandomNumberGeneratorReturnsNotNull()
     {
         $bnum = null;
-        $number = new Generator();
-        $bnum = $number->generate();
+        $bnum = $this->handle->generate();
         $this->assertNotNull($bnum);
     }
 
     public function testGeneratorReturnsZero()
     {
-        $bnum = Generator::generate(0);
+        $bnum = $this->handle->generate(0);
         $expected = "0";
         $this->assertEquals($expected, $bnum);
     }
 
     public function testCheckLengthOfGeneratedAgainstPropertyValue1()
     {
-        $bnum = Generator::generate(null, null, false, true);
-        $conc = strlen((string)Generator::$mantissa) + Generator::$exponent;
-        $expected = strlen($bnum);
-        $this->assertEquals($expected, $conc);
-    }
-
-    public function testCheckLengthOfGeneratedAgainstPropertyValue2()
-    {
-        $bnum = Generator::generate(2, 10, false, false);
-        $conc = strlen((string)Generator::$mantissa) + Generator::$exponent;
-        $expected = strlen($bnum);
-        $this->assertEquals($expected, $conc);
+        $expected = strlen($this->handle->generate());
+        $actual = $this->handle->exponent;
+        $this->assertEquals($expected, $actual);
     }
 
     public function testZeroFirstArgumentAndIgnoreOtherCheck()
     {
-        $bnum = Generator::generate(0, 15, true, false);
+        $bnum = $this->handle->generate(0, true);
+        $expected = "0";
+        $this->assertEquals($expected, $bnum);
+    }
+
+    public function testNegativeNumberAsFirstArgumentReturnsZero()
+    {
+        $bnum = $this->handle->generate(-758, true);
         $expected = "0";
         $this->assertEquals($expected, $bnum);
     }
@@ -77,10 +78,9 @@ class GeneratorTests extends TestCase
     public function testProfilerClassMethod1()
     {
         $inst = new Profiler();
-        $data = $inst->Start();
-        $expected = $inst->Stop();
-        $this->assertGreaterThan($expected, $data);
+        $start = $inst->Start();
+        $stop = $inst->Stop();
+        $this->assertGreaterThan($stop, $start);
     }
-
 
 }

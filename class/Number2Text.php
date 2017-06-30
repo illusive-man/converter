@@ -6,7 +6,7 @@ namespace Converter\Core;
 use Converter\Init\Data;
 
 /**
- * Converts a number (up to 1e+510) to its text representation e.g. 12 -> двенадцать (Russian only).
+ * Converts a number (up to 1e+510) to its text representation e.g. 312 -> триста двенадцать (Russian only).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
@@ -17,14 +17,10 @@ final class Number2Text
     private $currency;
     private $sign;
 
-    public function currency(bool $show = false): bool
+    public function convert(string $input, bool $show = false): string
     {
-        return $this->currency = $show;
-    }
-
-    public function convert(string $input): string
-    {
-        $this->iNumber = $this->prepNumber($input);
+        $this->currency = $show;
+        $this->prepNumber($input);
         $fullResult = null;
         $arrChunks = $this->makeChunks();
         $numGroups = count($arrChunks);
@@ -60,7 +56,7 @@ final class Number2Text
             $this->sign = 'минус ';
             $number = substr($number, 1);
         }
-        return preg_replace("/[^\d]/", "", $number);
+        return $this->iNumber = preg_replace("/[^\d]/", "", $number);
     }
 
     /**
@@ -128,11 +124,13 @@ final class Number2Text
 
     private function getSuffix(int $lastDigits, int $group): string
     {
-        $group = $group > 3 ? 3 : $group;
+        if ($group > 3) {
+            $group = 3;
+        }
         $last = $lastDigits % 10;
         $result = $this->data->arrSuffix[2][$group];
-
         if ($lastDigits >= 11 && $lastDigits <= 14) {
+            //Empty but necessary condition
         } elseif ($last === 1) {
             $result = $this->data->arrSuffix[0][$group];
         } elseif ($last >= 2 && $last <= 4) {

@@ -108,7 +108,6 @@ class FunctionalTests extends TestCase
 
     public function testBundleForNumbersWithCurrency()
     {
-        $this->handle->currency(true);
         $testarr = ['0' => "ноль рублей",
                     '-0' => "ноль рублей",
                     '-905'=> "минус девятьсот пять рублей",
@@ -118,7 +117,7 @@ class FunctionalTests extends TestCase
                     '801235' => "восемьсот одна тысяча двести тридцать пять рублей"
         ];
         foreach ($testarr as $number => $word) {
-            $this->assertEquals($word, $this->handle->convert((string)$number));
+            $this->assertEquals($word, $this->handle->convert((string)$number, true));
         }
     }
 
