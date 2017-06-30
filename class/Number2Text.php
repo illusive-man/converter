@@ -15,65 +15,56 @@ final class Number2Text
     private $data;
     private $iNumber;
     private $currency;
-    private $sign = null;
-
-    public function __construct(string $number)
-    {
-        $this->prepNumber($number);
-    }
-
-    /**
-     * Defines the sign of the number, returns absolute value
-     * @param string    $number - signed initial number
-     * @property string $sign - sign of a number
-     * @return string - unsigned number
-     */
-    private function prepNumber(string $number): string
-    {
-        if (substr($number, 0, 1) == '-') {
-            $this->sign = 'минус ';
-            $number = ltrim($number, '-');
-        }
-        if ($number === '0') {
-            $this->sign = '';
-        }
-
-        return $this->iNumber = $number;
-    }
+    private $sign;
 
     public function currency(bool $show = false): bool
     {
         return $this->currency = $show;
     }
 
-    public function convert(): string
+    public function convert(string $input): string
     {
+        $this->iNumber = $this->prepNumber($input);
         $fullResult = null;
         $arrChunks = $this->makeChunks();
         $numGroups = count($arrChunks);
 
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
+            $this->sign = '';
         }
 
         $this->data = new Data();
-
         for ($i = $numGroups; $i >= 1; $i--) {
             $currChunk = (int)strrev($arrChunks[$i - 1]);
             $this->fixArray($i);
             $preResult = $this->makeWords($currChunk);
-
             if ($currChunk !== 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
             }
             $fullResult .= $preResult;
         }
-
         return $this->sign . $fullResult;
     }
 
     /**
-     * Creates an array with reversed 3-digit chunks of given number
+     * Checks and normalizes input number, defines its sign and returns absolute value.
+     * @param string    $number - signed input number
+     * @property string $sign   - sign of a number
+     * @return string - unsigned number
+     */
+    private function prepNumber(string $number): string
+    {
+        $this->sign = '';
+        if (substr($number, 0, 1) === "-") {
+            $this->sign = 'минус ';
+            $number = substr($number, 1);
+        }
+        return preg_replace("/[^\d]/", "", $number);
+    }
+
+    /**
+     * Creates an array with reversed 3-digit chunks of given number.
      * Example: '1125468' => array['864', '521', '1']
      * @return array
      */
@@ -87,7 +78,7 @@ final class Number2Text
     }
 
     /**
-     * Change data array so that femine names of units is correct (Russian specific language construct)
+     * Change data array so that femine names of units are correct (Russian specific language construct)
      * @param int $fem - flag that indicates chunk index
      * @internal param \Converter\Init\Data $data - Data object with data arrays.
      */
@@ -107,7 +98,6 @@ final class Number2Text
         $resWords = '';
         $cent = (int)($cChunk / 100);
         $decs = $cChunk % 100;
-
         if ($cent >= 1) {
             $resWords .= $this->data->arrHundreds[$cent - 1];
         }
@@ -121,7 +111,6 @@ final class Number2Text
         if ($decs % 10 !== 0) {
             $resWords .= $this->data->arrUnits[$decs % 10 - 1];
         }
-
         return $resWords;
     }
 
@@ -134,26 +123,21 @@ final class Number2Text
         if (!$this->currency && $chunkPos === 1) {
             return $subResult;
         }
-
-        return $exponent . $this->addSuffix($lastDigits, $chunkPos);
+        return $exponent . $this->getSuffix($lastDigits, $chunkPos);
     }
 
-    private function addSuffix(int $lastDigits, int $group): string
+    private function getSuffix(int $lastDigits, int $group): string
     {
-        if ($group > 3) {
-            $group = 3;
-        }
+        $group = $group > 3 ? 3 : $group;
         $last = $lastDigits % 10;
+        $result = $this->data->arrSuffix[2][$group];
+
         if ($lastDigits >= 11 && $lastDigits <= 14) {
-            $result = $this->data->arrSuffix[2][$group];
         } elseif ($last === 1) {
             $result = $this->data->arrSuffix[0][$group];
         } elseif ($last >= 2 && $last <= 4) {
             $result = $this->data->arrSuffix[1][$group];
-        } else {
-            $result = $this->data->arrSuffix[2][$group];
         }
-
         return $result;
     }
 }

@@ -32,7 +32,6 @@ class Generator
 
         $con = new Data();
         $max = $con->getExpSize() * 3;
-        echo '<br>MAX:', $max, '<br>';
 
         self::$mantissa = $mantissa ?? mt_rand(0, 99);
         self::$exponent = $exponent ?? mt_rand(1, $max);

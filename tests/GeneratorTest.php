@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  * Class GeneratorTest
  * @package Converter
  */
-class GeneratorTest extends TestCase
+class GeneratorTests extends TestCase
 {
     public function testGeneratePositiveNumberMethod()
     {
