@@ -16,31 +16,37 @@ final class Number2Text
     private $iNumber;
     private $currency;
     private $sign;
+    private $arrChunks;
 
     public function convert(string $input, bool $show = false): string
     {
         $this->currency = $show;
         $this->prepNumber($input);
-        $fullResult = null;
-        $arrChunks = $this->makeChunks();
-        $numGroups = count($arrChunks);
+        $this->makeChunks();
+        $numGroups = count($this->arrChunks);
+        $fullResult = $this->magicConverter($numGroups);
 
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
             $this->sign = '';
         }
 
+        return $fullResult;
+    }
+
+    private function magicConverter(int $numgrps, string $fullres = null): string
+    {
         $this->data = new Data();
-        for ($i = $numGroups; $i >= 1; $i--) {
-            $currChunk = (int)strrev($arrChunks[$i - 1]);
+        for ($i = $numgrps; $i >= 1; $i--) {
+            $currChunk = (int)strrev($this->arrChunks[$i - 1]);
             $this->fixArray($i);
             $preResult = $this->makeWords($currChunk);
             if ($currChunk !== 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
             }
-            $fullResult .= $preResult;
+            $fullres .= $preResult;
         }
-        return $this->sign . $fullResult;
+        return $this->sign . $fullres;
     }
 
     /**
@@ -64,13 +70,11 @@ final class Number2Text
      * Example: '1125468' => array['864', '521', '1']
      * @return array
      */
-    private function makeChunks(): array
+    private function makeChunks()
     {
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
-        $arrCh = explode("\r\n", rtrim($chunks));
-
-        return $arrCh;
+        $this->arrChunks = explode("\r\n", rtrim($chunks));
     }
 
     /**
