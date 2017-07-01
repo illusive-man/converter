@@ -24,19 +24,19 @@ final class Number2Text
         $this->prepNumber($input);
         $this->makeChunks();
         $numGroups = count($this->arrChunks);
-        $fullResult = $this->magicConverter($numGroups);
+        $fullResult = '';
 
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
             $this->sign = '';
         }
-
-        return $fullResult;
+        return $this->magicConverter($numGroups, $fullResult);
     }
 
-    private function magicConverter(int $numgrps, string $fullres = null): string
+    private function magicConverter(int $numgrps, string $fullres): string
     {
         $this->data = new Data();
+
         for ($i = $numgrps; $i >= 1; $i--) {
             $currChunk = (int)strrev($this->arrChunks[$i - 1]);
             $this->fixArray($i);
@@ -134,7 +134,7 @@ final class Number2Text
         $last = $lastDigits % 10;
         $result = $this->data->arrSuffix[2][$group];
         if ($lastDigits >= 11 && $lastDigits <= 14) {
-            //Empty but necessary condition
+            true;
         } elseif ($last === 1) {
             $result = $this->data->arrSuffix[0][$group];
         } elseif ($last >= 2 && $last <= 4) {
