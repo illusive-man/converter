@@ -21,15 +21,13 @@ final class Number2Text
     public function convert(string $input, bool $show = false): string
     {
         $this->currency = $show;
-        $this->prepNumber($input);
-        $this->makeChunks();
-        $numGroups = count($this->arrChunks);
+        $this->initData($input);
         $fullResult = '';
-
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
             $this->sign = '';
         }
+        $numGroups = count($this->arrChunks);
 
         return $this->magicConverter($numGroups, $fullResult);
     }
@@ -57,23 +55,15 @@ final class Number2Text
      * @property string $sign   - sign of a number
      * @return string - unsigned number
      */
-    private function prepNumber(string $number): string
+    private function initData(string $number): void
     {
         $this->sign = '';
         if (substr($number, 0, 1) === "-") {
             $this->sign = 'минус ';
             $number = substr($number, 1);
         }
+        $this->iNumber = preg_replace("/[^\d]/", "", $number);
 
-        return $this->iNumber = preg_replace("/[^\d]/", "", $number);
-    }
-
-    /**
-     * Creates an array with reversed 3-digit chunks of given number.
-     * Example: '1125468' => array['864', '521', '1']
-     */
-    private function makeChunks()
-    {
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
         $this->arrChunks = explode("\r\n", rtrim($chunks));
@@ -118,17 +108,17 @@ final class Number2Text
 
     private function getRegister(int $chunkPos, int $chunkData): string
     {
-        $lastDigits = $chunkData % 100;
-        $exponent = $this->data->arrExponents[$chunkPos];
         if (!$this->currency && $chunkPos === 1) {
             return '';
         }
-        $group = $chunkPos;
+
+        $lastTwoDigits = $chunkData % 100;
+        $exponent = $this->data->arrExponents[$chunkPos];
         if ($chunkPos > 3) {
-            $group = 3;
+            $chunkPos = 3;
         }
-        $index = $this->getSuffix($lastDigits, $group);
-        $suffix = $this->data->arrSuffix[$index][$group];
+        $index = $this->getSuffix($lastTwoDigits);
+        $suffix = $this->data->arrSuffix[$index][$chunkPos];
         return $exponent . $suffix;
     }
 
@@ -138,9 +128,11 @@ final class Number2Text
 
         if ($lastDigits > 10 && $lastDigits < 15) {
             return 2;
-        } elseif ($last === 1) {
+        }
+        if ($last === 1) {
             return 0;
-        } elseif ($last >= 2 && $last <= 4) {
+        }
+        if ($last >= 2 && $last <= 4) {
             return 1;
         }
 
