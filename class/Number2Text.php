@@ -30,6 +30,7 @@ final class Number2Text
             $fullResult = 'ноль ';
             $this->sign = '';
         }
+
         return $this->magicConverter($numGroups, $fullResult);
     }
 
@@ -46,6 +47,7 @@ final class Number2Text
             }
             $fullres .= $preResult;
         }
+
         return $this->sign . $fullres;
     }
 
@@ -62,13 +64,13 @@ final class Number2Text
             $this->sign = 'минус ';
             $number = substr($number, 1);
         }
+
         return $this->iNumber = preg_replace("/[^\d]/", "", $number);
     }
 
     /**
      * Creates an array with reversed 3-digit chunks of given number.
      * Example: '1125468' => array['864', '521', '1']
-     * @return array
      */
     private function makeChunks()
     {
@@ -79,12 +81,12 @@ final class Number2Text
 
     /**
      * Change data array so that femine names of units are correct (Russian specific language construct)
-     * @param int $fem - flag that indicates chunk index
+     * @param int $group - chunk's group in number from the end
      * @internal param \Converter\Init\Data $data - Data object with data arrays.
      */
-    private function fixArray(int $fem)
+    private function fixArray(int $group)
     {
-        if ($fem === 2) {
+        if ($group === 2) {
             $this->data->arrUnits[0] = 'одна ';
             $this->data->arrUnits[1] = 'две ';
         } else {
@@ -103,43 +105,45 @@ final class Number2Text
         }
         if ($decs >= 1 && $decs <= 19) {
             $resWords .= $this->data->arrUnits[$decs - 1];
-            $decs = 0;
-        }
-        if ($decs !== 0) {
+            return $resWords;
+        } elseif ($decs !== 0) {
             $resWords .= $this->data->arrTens[$decs / 10 - 1];
         }
         if ($decs % 10 !== 0) {
             $resWords .= $this->data->arrUnits[$decs % 10 - 1];
         }
+
         return $resWords;
     }
 
     private function getRegister(int $chunkPos, int $chunkData): string
     {
-        $subResult = '';
         $lastDigits = $chunkData % 100;
         $exponent = $this->data->arrExponents[$chunkPos];
-
         if (!$this->currency && $chunkPos === 1) {
-            return $subResult;
+            return '';
         }
-        return $exponent . $this->getSuffix($lastDigits, $chunkPos);
-    }
-
-    private function getSuffix(int $lastDigits, int $group): string
-    {
-        if ($group > 3) {
+        $group = $chunkPos;
+        if ($chunkPos > 3) {
             $group = 3;
         }
+        $index = $this->getSuffix($lastDigits, $group);
+        $suffix = $this->data->arrSuffix[$index][$group];
+        return $exponent . $suffix;
+    }
+
+    private function getSuffix(int $lastDigits): int
+    {
         $last = $lastDigits % 10;
-        $result = $this->data->arrSuffix[2][$group];
-        if ($lastDigits >= 11 && $lastDigits <= 14) {
-            true;
+
+        if ($lastDigits > 10 && $lastDigits < 15) {
+            return 2;
         } elseif ($last === 1) {
-            $result = $this->data->arrSuffix[0][$group];
+            return 0;
         } elseif ($last >= 2 && $last <= 4) {
-            $result = $this->data->arrSuffix[1][$group];
+            return 1;
         }
-        return $result;
+
+        return 2;
     }
 }
