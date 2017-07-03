@@ -38,7 +38,7 @@ final class Number2Text
 
         for ($i = $numgrps; $i >= 1; $i--) {
             $currChunk = (int)strrev($this->arrChunks[$i - 1]);
-            $this->fixArray($i);
+            $i < 3 ? $this->fixArray($i) : true;
             $preResult = $this->makeWords($currChunk);
             if ($currChunk !== 0 || $i === 1) {
                 $preResult .= $this->getRegister($i, $currChunk);
@@ -60,7 +60,7 @@ final class Number2Text
 
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
-        $this->arrChunks = explode("\r\n", rtrim($chunks));
+        $this->arrChunks = explode("\r\n", $chunks);
     }
 
     private function fixArray(int $group)
@@ -82,7 +82,10 @@ final class Number2Text
         if ($cent >= 1) {
             $resWords .= $this->data->arrHundreds[$cent - 1];
         }
-        if ($decs >= 1 && $decs <= 19) {
+        if ($decs === 0) {
+            return $resWords;
+        }
+        if ($decs < 20) {
             $resWords .= $this->data->arrUnits[$decs - 1];
             return $resWords;
         } elseif ($decs !== 0) {
@@ -117,6 +120,7 @@ final class Number2Text
         if ($lastDigits >= 11 && $lastDigits <= 14) {
             return 2;
         }
+
         if ($last === 1) {
             return 0;
         }
