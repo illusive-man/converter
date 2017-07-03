@@ -49,13 +49,7 @@ final class Number2Text
         return $this->sign . $fullres;
     }
 
-    /**
-     * Checks and normalizes input number, defines its sign and returns absolute value.
-     * @param string    $number - signed input number
-     * @property string $sign   - sign of a number
-     * @return string - unsigned number
-     */
-    private function initData(string $number): void
+    private function initData(string $number)
     {
         $this->sign = '';
         if (substr($number, 0, 1) === "-") {
@@ -69,11 +63,6 @@ final class Number2Text
         $this->arrChunks = explode("\r\n", rtrim($chunks));
     }
 
-    /**
-     * Change data array so that femine names of units are correct (Russian specific language construct)
-     * @param int $group - chunk's group in number from the end
-     * @internal param \Converter\Init\Data $data - Data object with data arrays.
-     */
     private function fixArray(int $group)
     {
         if ($group === 2) {
@@ -111,7 +100,6 @@ final class Number2Text
         if (!$this->currency && $chunkPos === 1) {
             return '';
         }
-
         $lastTwoDigits = $chunkData % 100;
         $exponent = $this->data->arrExponents[$chunkPos];
         if ($chunkPos > 3) {
@@ -126,7 +114,7 @@ final class Number2Text
     {
         $last = $lastDigits % 10;
 
-        if ($lastDigits > 10 && $lastDigits < 15) {
+        if ($lastDigits >= 11 && $lastDigits <= 14) {
             return 2;
         }
         if ($last === 1) {
