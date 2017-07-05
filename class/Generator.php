@@ -7,7 +7,6 @@ use Converter\Init\Data;
 class Generator
 {
     public $exponent;
-    public $sign;
     public $data;
 
     public function __construct()
@@ -15,26 +14,21 @@ class Generator
         $this->data = new Data();
     }
 
-    /**
-     * @param int|null $exponent - amount of gigits in resulting number
-     * @param bool     $negative - set to true if you want negative number
-     * @return string - generated number (can be safely passed to Number2Text class)
-     */
-    public function generate(int $exponent = null, bool $negative = false): string
+    public function generate(int $exponent = null): string
     {
         $max = $this->data->getExpSize() * 3;
         $this->exponent = $exponent ?? mt_rand(1, $max);
-        $this->sign = $negative ? '-' : '';
-        $finalNumber = '';
 
         if ($this->exponent <= 0) {
             return "0";
         }
 
+        $digits = [];
         for ($i = 1; $i <= $this->exponent; $i++) {
-                $finalNumber .= mt_rand(1, 9);
+                $digits[]= mt_rand(0, 9);
         }
 
-        return $this->sign . $finalNumber;
+        $digits[0] === 0 ? mt_rand(1, 9) : $digits[0];
+        return implode('', $digits);
     }
 }

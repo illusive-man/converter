@@ -8,12 +8,12 @@ class Profiler
     private $start;
     private $end;
 
-    public function Start()
+    public function proStart()
     {
         return $this->start = microtime(true);
     }
 
-    public function Stop()
+    public function proStop()
     {
         return $this->end = microtime(true) - $this->start;
     }

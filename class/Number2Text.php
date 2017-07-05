@@ -18,9 +18,13 @@ final class Number2Text
     private $sign;
     private $arrChunks;
 
-    public function convert(string $input, bool $show = false): string
+    public function currency(bool $show = false)
     {
         $this->currency = $show;
+    }
+
+    public function convert(string $input): string
+    {
         $this->initData($input);
         $fullResult = '';
         if ($this->iNumber === '0') {
@@ -30,23 +34,6 @@ final class Number2Text
         $numGroups = count($this->arrChunks);
 
         return $this->magicConverter($numGroups, $fullResult);
-    }
-
-    private function magicConverter(int $numgrps, string $fullres): string
-    {
-        $this->data = new Data();
-
-        for ($i = $numgrps; $i >= 1; $i--) {
-            $currChunk = (int)strrev($this->arrChunks[$i - 1]);
-            $i < 3 ? $this->fixArray($i) : true;
-            $preResult = $this->makeWords($currChunk);
-            if ($currChunk !== 0 || $i === 1) {
-                $preResult .= $this->getRegister($i, $currChunk);
-            }
-            $fullres .= $preResult;
-        }
-
-        return $this->sign . $fullres;
     }
 
     private function initData(string $number)
@@ -63,15 +50,32 @@ final class Number2Text
         $this->arrChunks = explode("\r\n", $chunks);
     }
 
-    private function fixArray(int $group)
+    private function magicConverter(int $numgrps, string $fullres): string
+    {
+        $this->data = new Data();
+
+        for ($i = $numgrps; $i >= 1; $i--) {
+            $currChunk = (int)strrev($this->arrChunks[$i - 1]);
+            $i < 3 ? $this->switchArray($i) : true;
+            $preResult = $this->makeWords($currChunk);
+            if ($currChunk !== 0 || $i === 1) {
+                $preResult .= $this->getExponent($i, $currChunk);
+            }
+            $fullres .= $preResult;
+        }
+
+        return $this->sign . $fullres;
+    }
+
+    private function switchArray(int $group)
     {
         if ($group === 2) {
             $this->data->arrUnits[0] = 'одна ';
             $this->data->arrUnits[1] = 'две ';
-        } else {
-            $this->data->arrUnits[0] = 'один ';
-            $this->data->arrUnits[1] = 'два ';
+            return;
         }
+        $this->data->arrUnits[0] = 'один ';
+        $this->data->arrUnits[1] = 'два ';
     }
 
     private function makeWords(int $cChunk): string
@@ -80,7 +84,7 @@ final class Number2Text
         $cent = (int)($cChunk / 100);
         $decs = $cChunk % 100;
         if ($cent >= 1) {
-            $resWords .= $this->data->arrHundreds[$cent - 1];
+            $resWords = $this->data->arrHundreds[$cent - 1];
         }
         if ($decs === 0) {
             return $resWords;
@@ -88,7 +92,7 @@ final class Number2Text
         if ($decs < 20) {
             $resWords .= $this->data->arrUnits[$decs - 1];
             return $resWords;
-        } elseif ($decs !== 0) {
+        } else {
             $resWords .= $this->data->arrTens[$decs / 10 - 1];
         }
         if ($decs % 10 !== 0) {
@@ -98,29 +102,25 @@ final class Number2Text
         return $resWords;
     }
 
-    private function getRegister(int $chunkPos, int $chunkData): string
+    private function getExponent(int $chunkPos, int $chunkData): string
     {
         if (!$this->currency && $chunkPos === 1) {
             return '';
         }
-        $lastTwoDigits = $chunkData % 100;
         $exponent = $this->data->arrExponents[$chunkPos];
-        if ($chunkPos > 3) {
-            $chunkPos = 3;
-        }
-        $index = $this->getSuffix($lastTwoDigits);
+        $chunkPos > 3 ? $chunkPos = 3 : true;
+        $index = $this->getIndex($chunkData % 100);
         $suffix = $this->data->arrSuffix[$index][$chunkPos];
+
         return $exponent . $suffix;
     }
 
-    private function getSuffix(int $lastDigits): int
+    private function getIndex(int $lastDigits): int
     {
         $last = $lastDigits % 10;
-
         if ($lastDigits >= 11 && $lastDigits <= 14) {
             return 2;
         }
-
         if ($last === 1) {
             return 0;
         }

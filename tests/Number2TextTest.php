@@ -23,7 +23,7 @@ class FunctionalTests extends TestCase
 
     public function testBundleForUnits()
     {
-        $hundreds = [
+        $units = [
             0 => 'ноль ',
             1 => 'один ',
             2 => 'два ',
@@ -35,14 +35,14 @@ class FunctionalTests extends TestCase
             8 => 'восемь ',
             9 => 'девять '
         ];
-        foreach ($hundreds as $number => $word) {
+        foreach ($units as $number => $word) {
             $this->assertEquals($word, $this->handle->convert((string)$number));
         }
     }
 
     public function testBundleForTens()
     {
-        $hundreds = [10 => 'десять ',
+        $tens = [10 => 'десять ',
                      11 => 'одиннадцать ',
                      12 => 'двенадцать ',
                      13 => 'тринадцать ',
@@ -63,7 +63,7 @@ class FunctionalTests extends TestCase
                      80 => 'восемьдесят ',
                      93 => 'девяносто три ',
         ];
-        foreach ($hundreds as $number => $word) {
+        foreach ($tens as $number => $word) {
             $this->assertEquals($word, $this->handle->convert((string)$number));
         }
     }
@@ -99,7 +99,7 @@ class FunctionalTests extends TestCase
                       '-210' => 'минус двести десять ',
                       '-111' => 'минус сто одиннадцать ',
                       '-401' => 'минус четыреста один ',
-                      '-10940' => 'минус десять тысяч девятьсот сорок '
+                      '-10940' => 'минус десять тысяч девятьсот сорок ',
         ];
         foreach ($negatives as $number => $words) {
             $this->assertEquals($words, $this->handle->convert((string)$number));
@@ -116,6 +116,7 @@ class FunctionalTests extends TestCase
                     '-111002' => "минус сто одиннадцать тысяч два рубля",
                     '801235' => "восемьсот одна тысяча двести тридцать пять рублей"
         ];
+        $this->handle->currency(true);
         foreach ($testarr as $number => $word) {
             $this->assertEquals($word, $this->handle->convert((string)$number, true));
         }

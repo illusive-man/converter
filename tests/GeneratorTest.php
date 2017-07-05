@@ -78,8 +78,8 @@ class GeneratorTests extends TestCase
     public function testProfilerClassMethod1()
     {
         $inst = new Profiler();
-        $start = $inst->Start();
-        $stop = $inst->Stop();
+        $start = $inst->proStart();
+        $stop = $inst->proStop();
         $this->assertGreaterThan($stop, $start);
     }
 
