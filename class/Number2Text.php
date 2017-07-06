@@ -58,9 +58,11 @@ final class Number2Text
         $currChunk = (int)strrev($this->arrChunks[$iterator - 1]);
         $iterator < 3 ? $this->switchArray($iterator) : true;
         $preResult = $this->makeWords($currChunk);
+
         if ($currChunk !== 0 || $iterator === 1) {
             $preResult .= $this->getExponent($iterator, $currChunk);
         }
+
         return $preResult;
     }
 
@@ -78,26 +80,44 @@ final class Number2Text
 
     private function makeWords(int $cChunk): string
     {
-        $resWords = '';
-        $cent = (int)($cChunk / 100);
         $decs = $cChunk % 100;
-        if ($cent >= 1) {
-            $resWords = $this->data->arrHundreds[$cent - 1];
-        }
+        $resWords = $this->getCentum($cChunk);
+
         if ($decs === 0) {
             return $resWords;
         }
-        if ($decs < 20) {
-            $resWords .= $this->data->arrUnits[$decs - 1];
 
-            return $resWords;
-        }
-        $resWords .= $this->data->arrTens[$decs / 10 - 1];
-        if ($decs % 10 !== 0) {
-            $resWords .= $this->data->arrUnits[$decs % 10 - 1];
-        }
+        $resWords  .= $this->getDecem($decs);
 
         return $resWords;
+    }
+
+    private function getCentum(int $chunk): string
+    {
+        $cent = (int)($chunk / 100);
+
+        if ($cent >= 1) {
+            return $this->data->arrHundreds[$cent - 1];
+        }
+
+        return '';
+    }
+
+    private function getDecem(int $decs): string
+    {
+        $result = '';
+        if ($decs < 20) {
+            $result .= $this->data->arrUnits[$decs - 1];
+
+            return $result;
+        }
+
+        $result .= $this->data->arrTens[$decs / 10 - 1];
+
+        if ($decs % 10 !== 0) {
+            $result .= $this->data->arrUnits[$decs % 10 - 1];
+        }
+        return $result;
     }
 
     private function getExponent(int $chunkPos, int $chunkData): string
