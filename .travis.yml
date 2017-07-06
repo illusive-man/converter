@@ -1,3 +1,8 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=fb04298b1472c53d02431ec2f1901e34f13a8245c3fa778b88d8fae98dfb36e0
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+
 language: php
 
 php:
@@ -8,7 +13,6 @@ php:
 # See: http://docs.travis-ci.com/user/workers/container-based-infrastructure/
 sudo: false
 
-## Cache composer
 cache:
   directories:
     - $HOME/.composer/cache
@@ -16,16 +20,17 @@ cache:
 before_script:
   - travis_retry composer self-update
   - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-dist
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
 
 script:
 # - vendor/bin/phpcs --standard=psr2 src/
   - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
 
 after_script:
   - |
-    php vendor/bin/test-reporter --stdout > codeclimate.json
     if [[ "$TRAVIS_PHP_VERSION" != 'hhvm' && "$TRAVIS_PHP_VERSION" != '7.0' ]]; then
       wget https://scrutinizer-ci.com/ocular.phar
       php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-      curl -X POST -d @codeclimate.json -H 'Content-Type: application/json' -H 'User-Agent: Code Climate (PHP Test Reporter v0.1.1)' https://codeclimate.com/test_reports
     fi
