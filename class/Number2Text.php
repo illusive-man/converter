@@ -15,10 +15,9 @@ final class Number2Text
     private $data;
     private $iNumber;
     private $currency;
-    private $sign;
     private $arrChunks;
 
-    public function currency(bool $show = false)
+    public function currency(bool $show = true)
     {
         $this->currency = $show;
     }
@@ -29,7 +28,6 @@ final class Number2Text
         $fullResult = '';
         if ($this->iNumber === '0') {
             $fullResult = 'ноль ';
-            $this->sign = '';
         }
         $numGroups = count($this->arrChunks);
 
@@ -38,13 +36,7 @@ final class Number2Text
 
     private function initData(string $number)
     {
-        $this->sign = '';
-        if (substr($number, 0, 1) === "-") {
-            $this->sign = 'минус ';
-            $number = substr($number, 1);
-        }
         $this->iNumber = preg_replace("/[^\d]/", "", $number);
-
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
         $this->arrChunks = explode("\r\n", $chunks);
@@ -64,7 +56,7 @@ final class Number2Text
             $fullres .= $preResult;
         }
 
-        return $this->sign . $fullres;
+        return $fullres;
     }
 
     private function switchArray(int $group)
@@ -72,6 +64,7 @@ final class Number2Text
         if ($group === 2) {
             $this->data->arrUnits[0] = 'одна ';
             $this->data->arrUnits[1] = 'две ';
+
             return;
         }
         $this->data->arrUnits[0] = 'один ';
@@ -91,10 +84,10 @@ final class Number2Text
         }
         if ($decs < 20) {
             $resWords .= $this->data->arrUnits[$decs - 1];
+
             return $resWords;
-        } else {
-            $resWords .= $this->data->arrTens[$decs / 10 - 1];
         }
+        $resWords .= $this->data->arrTens[$decs / 10 - 1];
         if ($decs % 10 !== 0) {
             $resWords .= $this->data->arrUnits[$decs % 10 - 1];
         }

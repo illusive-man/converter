@@ -1,10 +1,9 @@
 ## NUMBER 2 TEXT CONVERTER (Russian only)
+[![Latest Stable Version](https://poser.pugx.org/illusive-man/converter/v/stable)](https://packagist.org/packages/illusive-man/converter) 
 [![Build Status](https://scrutinizer-ci.com/g/illusive-man/converter/badges/build.png?b=master)](https://scrutinizer-ci.com/g/illusive-man/converter/build-status/master) 
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/illusive-man/converter/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/illusive-man/converter/?branch=master) 
 [![Code Climate](https://codeclimate.com/github/illusive-man/converter/badges/gpa.svg)](https://codeclimate.com/github/illusive-man/converter) 
 [![Code Coverage](https://scrutinizer-ci.com/g/illusive-man/converter/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/illusive-man/converter/?branch=master) 
-[![Latest Stable Version](https://poser.pugx.org/illusive-man/converter/v/stable)](https://packagist.org/packages/illusive-man/converter) 
-[![License](https://poser.pugx.org/illusive-man/converter/license)](https://packagist.org/packages/illusive-man/converter)
 
 Compact PHP Library that converts given numeric value to its written text representation (in Russian).
 At first I wanted Number2Text to be Universal library, but considering amount of similar classes for other 
@@ -30,17 +29,17 @@ Include your autoload.php file and type use statement for the class like this:
 require_once 'vendor/autoload.php';
 use Converter\Core\Number2Text;
 ```
-Instantiate the class. If you need currency shown uncomment second line:
-```$php
+Instantiate the class. If you need currency shown, uncomment second line:
+```php
 $number = new Number2Text();
-//$number->currency(true);
+//$number->currency();
 ```
 
 Well, the only thing left to do is a number we want to convert and method,
 thal will do all the magic.
-```
+```php
 $number = '1051650555165450046516654000654640690000959555987960054106514';
-$result = $test->convert($number);
+echo $test->convert($number);
 ```
 NOTE: Since we're working with numbers way beyound bigger than even 64-bit 
 php_max_int() ones, always pass a number as string!
