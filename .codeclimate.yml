@@ -1,5 +1,9 @@
-exclude_paths:
-  - "tests/"
+languages:
+   PHP: true
+
 ratings:
   paths:
-    - "class/"
+    - "class/*"
+
+exclude_paths:
+    - "tests/*"
