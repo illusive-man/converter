@@ -47,16 +47,21 @@ final class Number2Text
         $this->data = new Data();
 
         for ($i = $numgrps; $i >= 1; $i--) {
-            $currChunk = (int)strrev($this->arrChunks[$i - 1]);
-            $i < 3 ? $this->switchArray($i) : true;
-            $preResult = $this->makeWords($currChunk);
-            if ($currChunk !== 0 || $i === 1) {
-                $preResult .= $this->getExponent($i, $currChunk);
-            }
-            $fullres .= $preResult;
+            $fullres .= $this->getWords($i);
         }
 
         return $fullres;
+    }
+
+    private function getWords(int $iterator): string
+    {
+        $currChunk = (int)strrev($this->arrChunks[$iterator - 1]);
+        $iterator < 3 ? $this->switchArray($iterator) : true;
+        $preResult = $this->makeWords($currChunk);
+        if ($currChunk !== 0 || $iterator === 1) {
+            $preResult .= $this->getExponent($iterator, $currChunk);
+        }
+        return $preResult;
     }
 
     private function switchArray(int $group)
