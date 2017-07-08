@@ -1,8 +1,9 @@
 {
   "name": "illusive-man/converter",
-  "description": "Number to text converter",
+  "description": "Convertes number to its text representation",
   "minimum-stability": "stable",
   "license": "MIT",
+  "homepage":  "https://github.com/illusive-man/converterr",
   "authors": [
     {
       "name": "Sergey Kanashin",
@@ -16,13 +17,23 @@
   },
   "autoload": {
     "psr-4": {
-      "Converter\\Core\\": "class",
-      "Converter\\Tools\\": "class",
-      "Converter\\Demo\\": "class",
-      "Converter\\Init\\": "class"
+      "Converter\\Core\\": "src",
+      "Converter\\Tools\\": "src",
+      "Converter\\Demo\\": "src",
+      "Converter\\Init\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Converter\\Unit\\Tests\\": "tests"
     }
   },
   "require-dev": {
     "phpunit/phpunit": "6.*"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "process-timeout": 5000,
+    "sort-packages": true
   }
 }

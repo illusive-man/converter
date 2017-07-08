@@ -1,16 +1,21 @@
 <?php
 declare(strict_types = 1);
 
-namespace ConverterTest;
+namespace Converter\Unit;
 
 use Converter\Core\Number2Text;
 use PHPUnit\Framework\TestCase;
 
 class FunctionalTests extends TestCase
 {
+    /**
+     * Instance of Number2Text class
+     *
+     * @var object
+     */
     public $handle;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->handle = new Number2Text();
     }
@@ -92,28 +97,10 @@ class FunctionalTests extends TestCase
         }
     }
 
-//    public function testBundleForNegativeNumbers()
-//    {
-//        $negatives = [
-//            '-0' => 'ноль ',
-//            '-5' => 'минус пять ',
-//            '-52' => 'минус пятьдесят два ',
-//            '-100' => 'минус сто ',
-//            '-210' => 'минус двести десять ',
-//            '-111' => 'минус сто одиннадцать ',
-//            '-401' => 'минус четыреста один ',
-//            '-10940' => 'минус десять тысяч девятьсот сорок ',
-//        ];
-//        foreach ($negatives as $number => $words) {
-//            $this->assertEquals($words, $this->handle->convert((string)$number));
-//        }
-//    }
-
     public function testBundleForNumbersWithCurrency()
     {
         $testarr = [
             '0' => "ноль рублей",
-            //'-0' => "ноль рублей",
             '905'=> "девятьсот пять рублей",
             '12014' => "двенадцать тысяч четырнадцать рублей",
             '108451'=> "сто восемь тысяч четыреста пятьдесят один рубль",

@@ -6,17 +6,40 @@ namespace Converter\Core;
 use Converter\Init\Data;
 
 /**
- * Converts a number up to 1e+510 to its text representation e.g. 312 -> триста двенадцать (Russian only).
+  * Converts a number up to 1e+510 to its text representation e.g. 312 -> триста двенадцать (Russian only).
+ *
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
 final class Number2Text
 {
+
+    /**
+     * @var mixed array
+     */
     private $data;
+
     private $iNumber;
+
+    /**
+     * Flag for whether to show currency text or not
+     *
+     * @var bool
+     */
     private $currency;
+
+    /**
+     * Array of triplets
+     *
+     * @var mixed array
+     */
     private $arrChunks;
 
+    /**
+     * Sets the visibility of currency name
+     *
+     * @param bool $show
+     */
     public function currency(bool $show = true)
     {
         $this->currency = $show;
@@ -58,6 +81,11 @@ final class Number2Text
         return $preResult;
     }
 
+    /**
+     * Depending on group's gender switches array to reflect that
+     *
+     * @param int $group
+     */
     private function switchArray(int $group)
     {
         if ($group === 2) {
@@ -137,7 +165,7 @@ final class Number2Text
         return $this->checkSingleChunk($last);
     }
 
-    public function checkSingleChunk($digit)
+    public function checkSingleChunk(int $digit): int
     {
         if ($digit === 1) {
             return 0;
@@ -148,5 +176,4 @@ final class Number2Text
 
         return 2;
     }
-
 }
