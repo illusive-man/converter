@@ -65,7 +65,7 @@ class Data
     }
 
     /**
-     * @return int - number of elements + 1 in Exponents array (if mult. by 3 we get max possible number for N2T Class).
+     * @return int - returns offset for maximum exponent in array
      */
     public function getExpSize(): int
     {

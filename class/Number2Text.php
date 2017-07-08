@@ -6,7 +6,7 @@ namespace Converter\Core;
 use Converter\Init\Data;
 
 /**
- * Converts a number (up to 1e+510) to its text representation e.g. 312 -> триста двенадцать (Russian only).
+ * Converts a number up to 1e+510 to its text representation e.g. 312 -> триста двенадцать (Russian only).
  * @author    Sergey Kanashin <goujon@mail.ru>
  * @copyright 2003-2017
  */
@@ -25,13 +25,16 @@ final class Number2Text
     public function convert(string $input): string
     {
         $this->initData($input);
-        $fullResult = '';
-        if ($this->iNumber === '0') {
-            $fullResult = 'ноль ';
-        }
+        $input === '0' ? $fullResult = 'ноль ' : $fullResult = '';
         $numGroups = count($this->arrChunks);
 
-        return $this->magicConverter($numGroups, $fullResult);
+        $this->data = new Data();
+
+        for ($i = $numGroups; $i >= 1; $i--) {
+            $fullResult .= $this->getWords($i);
+        }
+
+        return $fullResult;
     }
 
     private function initData(string $number)
@@ -40,17 +43,6 @@ final class Number2Text
         $rvrsValue = strrev($this->iNumber);
         $chunks = chunk_split($rvrsValue, 3);
         $this->arrChunks = explode("\r\n", $chunks);
-    }
-
-    private function magicConverter(int $numgrps, string $fullres): string
-    {
-        $this->data = new Data();
-
-        for ($i = $numgrps; $i >= 1; $i--) {
-            $fullres .= $this->getWords($i);
-        }
-
-        return $fullres;
     }
 
     private function getWords(int $iterator): string
@@ -87,7 +79,7 @@ final class Number2Text
             return $resWords;
         }
 
-        $resWords  .= $this->getDecem($decs);
+        $resWords .= $this->getDecem($decs);
 
         return $resWords;
     }
@@ -117,6 +109,7 @@ final class Number2Text
         if ($decs % 10 !== 0) {
             $result .= $this->data->arrUnits[$decs % 10 - 1];
         }
+
         return $result;
     }
 
@@ -136,16 +129,24 @@ final class Number2Text
     private function getIndex(int $lastDigits): int
     {
         $last = $lastDigits % 10;
+
         if ($lastDigits >= 11 && $lastDigits <= 14) {
             return 2;
         }
-        if ($last === 1) {
+
+        return $this->checkSingleChunk($last);
+    }
+
+    public function checkSingleChunk($digit)
+    {
+        if ($digit === 1) {
             return 0;
         }
-        if ($last >= 2 && $last <= 4) {
+        if ($digit >= 2 && $digit <= 4) {
             return 1;
         }
 
         return 2;
     }
+
 }
