@@ -11,8 +11,8 @@ languages I stopped at using only Russian wording. Maybe I will extend it for En
 
 INFO
 
-Number2Text is capable of lightning fast conversion for numbers from negative 1e+510 to positive 1e+510. Sure 
-it has no practical application for numberes over quadrillion I think, but isn't it cool, is it?!
+Number2Text is capable of lightning fast conversion for numbers from negative 1e+510 to positive 1e+510. Sure, in
+ real life it has no practical application for numberes over quadrillion I think, but isn't it cool, is it?! 
 
 INSTALLATION
 
@@ -32,7 +32,7 @@ use Converter\Core\Number2Text;
 Instantiate the class. If you need currency shown, uncomment second line:
 ```php
 $number = new Number2Text();
-//$number->currency();
+//$number->currency(true);
 ```
 
 Well, the only thing left to do is a number we want to convert and method,
