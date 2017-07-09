@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
  * Class GeneratorTest
  * @package Converter
  */
-class GeneratorTests extends TestCase
+class GeneratorTest extends TestCase
 {
     public $handle;
     public function setUp()
@@ -82,5 +82,4 @@ class GeneratorTests extends TestCase
         $stop = $inst->proStop();
         $this->assertGreaterThan($stop, $start);
     }
-
 }

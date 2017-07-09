@@ -6,7 +6,7 @@ namespace Converter\Unit;
 use Converter\Core\Number2Text;
 use PHPUnit\Framework\TestCase;
 
-class FunctionalTests extends TestCase
+class Number2TextTest extends TestCase
 {
     /**
      * Instance of Number2Text class
