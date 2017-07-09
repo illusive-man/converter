@@ -25,7 +25,7 @@ class Generator
 
         $digits = [];
         for ($i = 1; $i <= $this->exponent; $i++) {
-                $digits[] = mt_rand(0, 9);
+            $digits[] = mt_rand(0, 9);
         }
 
         $digits[0] == 0 ? mt_rand(1, 9) : $digits[0];

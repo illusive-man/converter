@@ -17,5 +17,4 @@ class Profiler
     {
         return $this->end = microtime(true) - $this->start;
     }
-
 }
