@@ -3,7 +3,7 @@ languages:
 
 ratings:
   paths:
-    - "class/*"
+    - "src/*"
 
 exclude_paths:
     - "tests/*"

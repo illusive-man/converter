@@ -36,14 +36,16 @@ final class Number2Text
     private $currency;
 
     /**
-     * Array of triplets
+     * Array with all triplets
      *
      * @var mixed array
      */
     private $arrChunks;
 
     /**
-     * Number2Text constructor. Implements loading of functional data.
+     * Load of functional data from Data class.
+     *
+     * Number2Text constructor.
      */
     public function __construct()
     {
@@ -63,15 +65,23 @@ final class Number2Text
     public function convert(string $input): string
     {
         $this->initData($input);
-        $input === '0' ? $fres[0] = 'ноль ' : $fres = [];
 
-        return implode($this->fetchData($fres));
+        $input === '0' ? $fullResult = 'ноль ' : $fullResult = null;
+
+        return implode($this->fetchData($fullResult));
     }
 
-    public function fetchData(array $fullResult): array
+    /**
+     * Iterates through triplets and calls main converter method
+     *
+     * @param $fres
+     * @return array
+     */
+    public function fetchData($fres): array
     {
         $numGroups = count($this->arrChunks);
 
+        $fullResult[] = $fres;
         for ($i = $numGroups; $i >= 1; $i--) {
             $fullResult[] = $this->getWords($i);
         }
@@ -79,6 +89,11 @@ final class Number2Text
         return $fullResult;
     }
 
+    /**
+     * Removes non numeric data from number and divides it to by chunks, 3 digits each (triplets)
+     *
+     * @param string $number
+     */
     private function initData(string $number)
     {
         $this->iNumber = preg_replace("/[^\d]/", "", $number);
@@ -87,6 +102,12 @@ final class Number2Text
         $this->arrChunks = explode("\r\n", $chunks);
     }
 
+    /**
+     * Get the triplet and sends it to the methods to process
+     *
+     * @param int $iterator
+     * @return string
+     */
     private function getWords(int $iterator): string
     {
         $currChunk = (int)strrev($this->arrChunks[$iterator - 1]);
@@ -117,6 +138,12 @@ final class Number2Text
         $this->data->arrUnits[1] = 'два ';
     }
 
+    /**
+     * Parent method for transforming the triplet to its text representation
+     *
+     * @param int $cChunk
+     * @return string
+     */
     private function makeWords(int $cChunk): string
     {
         $decs = $cChunk % 100;
@@ -131,6 +158,12 @@ final class Number2Text
         return $resWords;
     }
 
+    /**
+     * Returns wording for hundreds
+     *
+     * @param int $chunk
+     * @return string
+     */
     private function getCentum(int $chunk): string
     {
         $cent = (int)($chunk / 100);
@@ -142,6 +175,12 @@ final class Number2Text
         return '';
     }
 
+    /**
+     *  Returns wording for tens and/or teens
+     *
+     * @param int $decs
+     * @return string
+     */
     private function getDecem(int $decs): string
     {
         $result = '';
@@ -160,6 +199,13 @@ final class Number2Text
         return $result;
     }
 
+    /**
+     * Gets the exponent name and returns it along with suffix (language specific)
+     *
+     * @param int $chunkPos
+     * @param int $chunkData
+     * @return string
+     */
     private function getExponent(int $chunkPos, int $chunkData): string
     {
         if (!$this->currency && $chunkPos === 1) {
@@ -173,6 +219,12 @@ final class Number2Text
         return $exponent . $suffix;
     }
 
+    /**
+     * Returns index for suffix of two-digit number
+     *
+     * @param int $lastDigits
+     * @return int
+     */
     private function getIndex(int $lastDigits): int
     {
         $last = $lastDigits % 10;
@@ -184,6 +236,12 @@ final class Number2Text
         return $this->checkSingleChunk($last);
     }
 
+    /**
+     * Returns index for suffix of single digit number
+     *
+     * @param int $digit
+     * @return int
+     */
     public function checkSingleChunk(int $digit): int
     {
         if ($digit === 1) {
